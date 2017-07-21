@@ -11,6 +11,7 @@ namespace Engine
 	{
 		HANDLE m_WindowHandle;
 		CPoint m_WindowSize;
+		CPoint m_FontSize;
 
 		class CBuffer
 		{
@@ -19,6 +20,7 @@ namespace Engine
 			string m_Value;
 			CPoint m_Position;
 			WORD m_ColorAttr;
+			bool m_bDirty = false;
 
 			CBuffer(){}
 
@@ -28,7 +30,10 @@ namespace Engine
 			}
 		};
 
-		vector<CBuffer> m_Buffer;
+		typedef pair<int, int> Key;
+		map<Key, CBuffer> m_Buffer;
+
+		void InitBuffer();
 
 	public:
 

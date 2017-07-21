@@ -9,7 +9,7 @@ void CGameApplication::DrawMap(const vector<int> &Chunk, int ChunkWidth, int Chu
 	{
 		for (int nCellX = 0; nCellX < ChunkWidth; nCellX++)
 		{
-			int CellValue = Chunk[nCellY + nCellX * ChunkWidth];
+			int CellValue = Chunk[nCellX + nCellY * ChunkHeight];
 
 			if (CellValue > 0)
 			{
@@ -29,7 +29,7 @@ bool CGameApplication::IsCanMove(const Engine::CPoint &Position, const vector<in
 {
 	assert(ChunkWidth * ChunkHeight == Chunk.size());
 
-	int CellValue = Chunk[Position.m_Y + Position.m_X * ChunkWidth];
+	int CellValue = Chunk[Position.m_X + Position.m_Y * ChunkHeight];
 
 	if (CellValue == 0)
 		return true;
@@ -52,27 +52,36 @@ void CGameApplication::OnUpdate()
 	if (GetKeyBoard()->IsKeyReleased(Engine::CKeyboard::K_KEY_A))
 	{
 		if (IsCanMove(Engine::CPoint(m_PlayerPosition.m_X - 1, m_PlayerPosition.m_Y), m_Map, m_MapWidth, m_MapHeight))
+		{
 			m_PlayerPosition.m_X--;
+		}
 	}
 
 	if (GetKeyBoard()->IsKeyReleased(Engine::CKeyboard::K_KEY_D))
 	{
 		if (IsCanMove(Engine::CPoint(m_PlayerPosition.m_X + 1, m_PlayerPosition.m_Y), m_Map, m_MapWidth, m_MapHeight))
+		{
 			m_PlayerPosition.m_X++;
+		}
 	}
 
 	if (GetKeyBoard()->IsKeyReleased(Engine::CKeyboard::K_KEY_W))
 	{
 		if (IsCanMove(Engine::CPoint(m_PlayerPosition.m_X, m_PlayerPosition.m_Y - 1), m_Map, m_MapWidth, m_MapHeight))
+		{
 			m_PlayerPosition.m_Y--;
+		}
 	}
 
 	if (GetKeyBoard()->IsKeyReleased(Engine::CKeyboard::K_KEY_S))
 	{
 		if (IsCanMove(Engine::CPoint(m_PlayerPosition.m_X, m_PlayerPosition.m_Y + 1), m_Map, m_MapWidth, m_MapHeight))
+		{
 			m_PlayerPosition.m_Y++;
+		}
 	}
 
+	GetGraphics()->Clear();
 	DrawMap(m_Map, m_MapWidth, m_MapHeight);
 	GetGraphics()->Flush();
 }

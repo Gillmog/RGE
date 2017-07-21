@@ -21,7 +21,7 @@ void Engine::CApplication::EventLoop(function<void()> &&Callback)
 		Callback();
 		OnUpdate();
 		m_pGraphics->Restore();
-		Sleep(1);
+		//Sleep(1);
 		m_pKeyBoard->ClearBufferedEnvents();
 	}
 }
