@@ -17,7 +17,12 @@ Engine::CGraphics::CGraphics(CPoint WindowSize)
 
 Engine::CGraphics::~CGraphics()
 {
+	
+}
 
+void Engine::CGraphics::Terminate()
+{
+	CloseHandle(m_WindowHandle);
 }
 
 void Engine::CGraphics::InitBuffer()
@@ -38,9 +43,19 @@ void Engine::CGraphics::InitBuffer()
 	}
 }
 
-
 void Engine::CGraphics::Clear()
 {
+	for (auto &Buffer : m_Buffer)
+	{
+		if (Buffer.second.m_bForce)
+		{
+			Buffer.second.m_bForce = false;
+			continue;
+		}
+
+		Buffer.second.m_bFlush = false;
+	}
+
 	COORD TopLeft = { 0, 0 };
 
 	SetConsoleCursorPosition(m_WindowHandle, TopLeft);
@@ -61,6 +76,8 @@ void Engine::CGraphics::ClearColor()
 		m_WindowHandle, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
 		Screen.dwSize.X * Screen.dwSize.Y, TopLeft, &Written
 	);
+
+	SetConsoleCursorPosition(m_WindowHandle, TopLeft);
 }
 
 void Engine::CGraphics::Restore()
@@ -117,41 +134,81 @@ void Engine::CGraphics::ShowCursor(bool bShow)
 	SetConsoleCursorInfo(m_WindowHandle, &CursorInfo);
 }
 
-void Engine::CGraphics::Draw(const string &Value, CPoint Position, WORD ColorAttr)
+void Engine::CGraphics::Draw(const string &Value, CPoint Position, WORD ColorAttr, bool bForce/* = false*/)
 {
-	CBuffer Buffer;
-	Buffer.m_Value = Value;
-	Buffer.m_Position = Position;
-	Buffer.m_ColorAttr = ColorAttr;
+	if (Value.length() > 1)
+	{
+		const char * Char = Value.c_str();
 
+		for (int i = 0; i < Value.length(); i++)
+		{
+			string CharString;
+			CharString += Char[i];
+			Draw(CharString, Position, ColorAttr, bForce);
+			Position.m_X++;
+		}
+
+		return;
+	}
+
+	CPoint NewPosition = Position + m_ViewPosition;
 	//Clip
-	if (Position.m_X < 0)
+	if (NewPosition.m_X < 0 || NewPosition.m_Y < 0 || NewPosition.m_X >= m_WindowSize.m_X || NewPosition.m_Y >= m_WindowSize.m_Y)
+	{
+		m_Buffer[make_pair(Position.m_X, Position.m_Y)] = CBuffer();
 		return;
-	if (Position.m_Y < 0)
-		return;
-	if (Position.m_X >= m_WindowSize.m_X)
-		return;
-	if (Position.m_Y >= m_WindowSize.m_Y)
-		return;
+	}
+
+	CBuffer Buffer = m_Buffer[make_pair(Position.m_X, Position.m_Y)];
+	Buffer.m_Position = NewPosition;
+
+	Buffer.m_bFlush = true;
+
+	Buffer.m_Value = Value;
+	Buffer.m_ColorAttr = ColorAttr;
 
 	string CurrentValue = m_Buffer[make_pair(Position.m_X, Position.m_Y)].m_Value;
 
-	if (CurrentValue != Value)
+	if (CurrentValue != Value && Buffer.m_bDirty == false)
 		Buffer.m_bDirty = true;
+
+	Buffer.m_bForce = bForce;
 	
 	m_Buffer[make_pair(Position.m_X, Position.m_Y)] = Buffer;
+	
 }
 
 void Engine::CGraphics::Flush()
 {
 	for (auto &Buffer : m_Buffer)
 	{
-		if (!Buffer.second.m_bDirty)
+		bool bClear = false;
+
+		if (Buffer.second.m_bFlush == false && Buffer.second.m_Value.length() != 0)
+		{
+			Buffer.second.m_Value = "";
+			bClear = true;
+		}
+
+		if (Buffer.second.m_bForce)
+		{
+			bClear = false;
+			Buffer.second.m_bDirty = true;
+		}
+
+	    if (!Buffer.second.m_bDirty && !bClear)
 			continue;
+
 		COORD Position = { (SHORT)Buffer.second.m_Position.m_X, (SHORT)Buffer.second.m_Position.m_Y };
 		SetConsoleCursorPosition(m_WindowHandle, Position);
 		SetConsoleTextAttribute(m_WindowHandle, Buffer.second.m_ColorAttr);
-		cout << Buffer.second.m_Value.c_str();
+		if (bClear)
+		{
+			cout << ' ';
+		}
+		else
+			cout << Buffer.second.m_Value.c_str();
+
 		Buffer.second.m_bDirty = false;
 	}
 

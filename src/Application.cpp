@@ -5,7 +5,7 @@ Engine::CApplication::CApplication(CPoint WindowSize)
 {
 	m_pGraphics = make_shared<CGraphics>(WindowSize);
 	m_pGraphics->ShowCursor(false);
-	m_pKeyBoard = make_shared<CKeyboard>();
+	m_pKeyboard = make_shared<CKeyboard>();
 }
 
 Engine::CApplication::~CApplication()
@@ -15,15 +15,37 @@ Engine::CApplication::~CApplication()
 
 void Engine::CApplication::EventLoop(function<void()> &&Callback)
 {
+	CTimer Timer;
+	Timer.Start();
+	double TimeDelta = Timer.GetDuration();
+
 	while (true)
 	{
-		m_pKeyBoard->OnUpdate();
+		m_pKeyboard->OnUpdate();
 		Callback();
-		OnUpdate();
+		OnUpdate(Timer.GetDurationInSeconds(), TimeDelta / Timer.GetDuration());
+		OnRenderBegin();
+		OnRender();
+		OnRenderEnd();
 		m_pGraphics->Restore();
-		//Sleep(1);
-		m_pKeyBoard->ClearBufferedEnvents();
+		m_pKeyboard->ClearBufferedEnvents();
+		TimeDelta = Timer.GetDuration();
 	}
+}
+
+void Engine::CApplication::OnRenderBegin()
+{
+	GetGraphics()->Clear();
+}
+
+void Engine::CApplication::OnRender()
+{
+
+}
+
+void Engine::CApplication::OnRenderEnd()
+{
+	GetGraphics()->Flush();
 }
 
 Engine::CTimer::CTimer() : m_Start(0), m_bStart(false)

@@ -10,6 +10,7 @@ namespace Engine
 	class CKeyboard
 	{
 		HANDLE m_InputHandle;
+		DWORD m_NumEvents = 0;
 
 	public:
 

@@ -27,6 +27,14 @@ namespace Engine
 
 			return *this;
 		}
+
+		CPoint &operator+(const CPoint &Other)
+		{
+			m_X += Other.m_X;
+			m_Y += Other.m_Y;
+
+			return *this;
+		}
 	};
 }
 

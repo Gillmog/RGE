@@ -31,7 +31,7 @@ namespace Engine
 	class CApplication
 	{
 		shared_ptr<CGraphics> m_pGraphics;
-		shared_ptr<CKeyboard> m_pKeyBoard;
+		shared_ptr<CKeyboard> m_pKeyboard;
 
 	public:
 
@@ -42,9 +42,12 @@ namespace Engine
 		void EventLoop(function<void()> &&Callback);
 
 		std::shared_ptr<Engine::CGraphics> GetGraphics() const { return m_pGraphics; }
-		std::shared_ptr<Engine::CKeyboard> GetKeyBoard() const { return m_pKeyBoard; }
+		std::shared_ptr<Engine::CKeyboard> GetKeyboard() const { return m_pKeyboard; }
 
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(double Time, double TimeDelta) {}
+		virtual void OnRenderBegin();
+		virtual void OnRender();
+		virtual void OnRenderEnd();
 	};
 }
 

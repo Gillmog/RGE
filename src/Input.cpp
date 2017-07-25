@@ -11,16 +11,21 @@ void Engine::CKeyboard::OnUpdate()
 	DWORD cc;
 	INPUT_RECORD InputRecord;
 
-	ReadConsoleInput(m_InputHandle, &InputRecord, 1, &cc);
+	GetNumberOfConsoleInputEvents(m_InputHandle, &m_NumEvents);
 
-	if (InputRecord.EventType == KEY_EVENT && ((KEY_EVENT_RECORD&)InputRecord.Event).bKeyDown)
+	if (m_NumEvents != 0)
 	{
-		KEY_EVENT_RECORD KeyRecord = (KEY_EVENT_RECORD&)InputRecord.Event;
-		CKey Key;
-		Key.m_Ascii = KeyRecord.uChar.AsciiChar;
-		Key.m_KeyCode = KeyRecord.wVirtualKeyCode;
-		Key.m_bState = true;
-		m_BufferedEvents[Key.m_KeyCode] = Key;
+		ReadConsoleInput(m_InputHandle, &InputRecord, 1, &cc);
+
+		if (InputRecord.EventType == KEY_EVENT && ((KEY_EVENT_RECORD&)InputRecord.Event).bKeyDown)
+		{
+			KEY_EVENT_RECORD KeyRecord = (KEY_EVENT_RECORD&)InputRecord.Event;
+			CKey Key;
+			Key.m_Ascii = KeyRecord.uChar.AsciiChar;
+			Key.m_KeyCode = KeyRecord.wVirtualKeyCode;
+			Key.m_bState = true;
+			m_BufferedEvents[Key.m_KeyCode] = Key;
+		}
 	}
 }
 

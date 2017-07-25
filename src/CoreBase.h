@@ -14,6 +14,8 @@
 #include <functional>
 #include <map>
 #include <set>
+#include <algorithm>
+#include <sstream>
 #include "Geometry.h"
 
 using namespace std;

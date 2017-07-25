@@ -21,8 +21,6 @@ void CGameApplication::DrawMap(const vector<int> &Chunk, int ChunkWidth, int Chu
 			}
 		}
 	}
-
-	GetGraphics()->Draw("@", m_PlayerPosition, 10 | FOREGROUND_INTENSITY);
 }
 
 bool CGameApplication::IsCanMove(const Engine::CPoint &Position, const vector<int> &Chunk, int ChunkWidth, int ChunkHeight)
@@ -39,7 +37,8 @@ bool CGameApplication::IsCanMove(const Engine::CPoint &Position, const vector<in
 
 CGameApplication::CGameApplication(const Engine::CPoint &WindowSize) : CApplication(WindowSize)
 {
-	m_PlayerPosition = Engine::CPoint(1, 1);
+	m_PlayerPosition = Engine::CPoint(16, 16);
+	m_ScrollPosition = Engine::CPoint(4, 0);
 }
 
 
@@ -47,41 +46,61 @@ CGameApplication::~CGameApplication()
 {
 }
 
-void CGameApplication::OnUpdate()
+void CGameApplication::OnUpdate(double Time, double TimeDelta)
 {
-	if (GetKeyBoard()->IsKeyReleased(Engine::CKeyboard::K_KEY_A))
+	CApplication::OnUpdate(Time, TimeDelta);
+	ostringstream TimeString;
+	TimeString << Time;
+	ostringstream TimeDeltaString;
+	TimeDeltaString << TimeDelta;
+	m_TimerValue = "Time: " + TimeString.str() + " TimeDelta: " + TimeDeltaString.str();
+
+	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_KEY_A))
 	{
 		if (IsCanMove(Engine::CPoint(m_PlayerPosition.m_X - 1, m_PlayerPosition.m_Y), m_Map, m_MapWidth, m_MapHeight))
 		{
 			m_PlayerPosition.m_X--;
+			m_ScrollPosition.m_X++;
 		}
 	}
 
-	if (GetKeyBoard()->IsKeyReleased(Engine::CKeyboard::K_KEY_D))
+	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_KEY_D))
 	{
 		if (IsCanMove(Engine::CPoint(m_PlayerPosition.m_X + 1, m_PlayerPosition.m_Y), m_Map, m_MapWidth, m_MapHeight))
 		{
 			m_PlayerPosition.m_X++;
+			m_ScrollPosition.m_X--;
 		}
 	}
 
-	if (GetKeyBoard()->IsKeyReleased(Engine::CKeyboard::K_KEY_W))
+	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_KEY_W))
 	{
 		if (IsCanMove(Engine::CPoint(m_PlayerPosition.m_X, m_PlayerPosition.m_Y - 1), m_Map, m_MapWidth, m_MapHeight))
 		{
 			m_PlayerPosition.m_Y--;
+			m_ScrollPosition.m_Y++;
 		}
 	}
 
-	if (GetKeyBoard()->IsKeyReleased(Engine::CKeyboard::K_KEY_S))
+	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_KEY_S))
 	{
 		if (IsCanMove(Engine::CPoint(m_PlayerPosition.m_X, m_PlayerPosition.m_Y + 1), m_Map, m_MapWidth, m_MapHeight))
 		{
 			m_PlayerPosition.m_Y++;
+			m_ScrollPosition.m_Y--;
 		}
 	}
+}
 
-	GetGraphics()->Clear();
+void CGameApplication::OnRender()
+{
+	CApplication::OnRender();
+	GetGraphics()->SetViewPosition(m_ScrollPosition);
 	DrawMap(m_Map, m_MapWidth, m_MapHeight);
+	GetGraphics()->Draw("@", m_PlayerPosition, 10 | FOREGROUND_INTENSITY);
 	GetGraphics()->Flush();
+	//Draw UI
+	GetGraphics()->SetViewPosition(Engine::CPoint(0, 0));
+	GetGraphics()->Draw("UI Draw", Engine::CPoint(20, 0), 20 | FOREGROUND_INTENSITY | FOREGROUND_BLUE, true);
+	GetGraphics()->Draw(m_TimerValue, Engine::CPoint(20, 1), 20 | FOREGROUND_INTENSITY | FOREGROUND_BLUE, true);
 }
