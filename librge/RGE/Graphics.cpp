@@ -1,9 +1,10 @@
-#include "stdafx.h"
 #include "Graphics.h"
 
 Engine::CGraphics::CGraphics(CPoint WindowSize)
 {
+#ifdef RGE_WIN
 	m_WindowHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+#endif
 
 	m_WindowSize = WindowSize;
 
@@ -22,7 +23,9 @@ Engine::CGraphics::~CGraphics()
 
 void Engine::CGraphics::Terminate()
 {
+#ifdef RGE_WIN
 	CloseHandle(m_WindowHandle);
+#endif
 }
 
 void Engine::CGraphics::InitBuffer()
@@ -56,32 +59,31 @@ void Engine::CGraphics::Clear()
 		Buffer.second.m_bFlush = false;
 	}
 
-	COORD TopLeft = { 0, 0 };
-
-	SetConsoleCursorPosition(m_WindowHandle, TopLeft);
+	SetCursorPosition(CPoint());
 }
 
 void Engine::CGraphics::ClearColor()
 {
-	COORD TopLeft = { 0, 0 };
-
+#ifdef RGE_WIN
 	CONSOLE_SCREEN_BUFFER_INFO Screen;
 	DWORD Written;
 
 	GetConsoleScreenBufferInfo(m_WindowHandle, &Screen);
 	FillConsoleOutputCharacterA(
-		m_WindowHandle, ' ', Screen.dwSize.X * Screen.dwSize.Y, TopLeft, &Written
+		m_WindowHandle, ' ', Screen.dwSize.X * Screen.dwSize.Y, {0, 0}, &Written
 	);
 	FillConsoleOutputAttribute(
 		m_WindowHandle, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
-		Screen.dwSize.X * Screen.dwSize.Y, TopLeft, &Written
+		Screen.dwSize.X * Screen.dwSize.Y, { 0, 0 }, &Written
 	);
+#endif
 
-	SetConsoleCursorPosition(m_WindowHandle, TopLeft);
+	SetCursorPosition(CPoint());
 }
 
 void Engine::CGraphics::Restore()
 {
+#ifdef RGE_WIN
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	GetConsoleScreenBufferInfo(m_WindowHandle, &csbi);
 
@@ -124,14 +126,32 @@ void Engine::CGraphics::Restore()
 			assert(0);
 		}
 	}
+#endif
 }
 
 void Engine::CGraphics::ShowCursor(bool bShow)
 {
+#ifdef RGE_WIN
 	CONSOLE_CURSOR_INFO CursorInfo;
 	GetConsoleCursorInfo(m_WindowHandle, &CursorInfo);
 	CursorInfo.bVisible = bShow;
 	SetConsoleCursorInfo(m_WindowHandle, &CursorInfo);
+#endif
+}
+
+void Engine::CGraphics::SetCursorPosition(CPoint Position)
+{
+#ifdef RGE_WIN
+	COORD TopLeft = { (SHORT)Position.m_X, (SHORT)Position.m_Y };
+	SetConsoleCursorPosition(m_WindowHandle, TopLeft);
+#endif
+}
+
+void Engine::CGraphics::SetColor(WORD Color)
+{
+#ifdef RGE_WIN
+	SetConsoleTextAttribute(m_WindowHandle, Color);
+#endif
 }
 
 void Engine::CGraphics::Draw(const string &Value, CPoint Position, WORD ColorAttr, bool bForce/* = false*/)
@@ -199,21 +219,24 @@ void Engine::CGraphics::Flush()
 	    if (!Buffer.second.m_bDirty && !bClear)
 			continue;
 
-		COORD Position = { (SHORT)Buffer.second.m_Position.m_X, (SHORT)Buffer.second.m_Position.m_Y };
-		SetConsoleCursorPosition(m_WindowHandle, Position);
-		SetConsoleTextAttribute(m_WindowHandle, Buffer.second.m_ColorAttr);
+		SetCursorPosition(Buffer.second.m_Position);
+
 		if (bClear)
 		{
+			SetColor(15);
 			cout << ' ';
 		}
 		else
+		{
+			SetColor(Buffer.second.m_ColorAttr);
 			cout << Buffer.second.m_Value.c_str();
+		}
 
 		Buffer.second.m_bDirty = false;
 	}
 
-	COORD TopLeft = { 0, 0 };
-	SetConsoleCursorPosition(m_WindowHandle, TopLeft);
+	SetCursorPosition(CPoint());
+	cout.flush();
 }
 
 void * Engine::CGraphics::GetWindowHandle() const

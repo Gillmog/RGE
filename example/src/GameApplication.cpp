@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "GameApplication.h"
 
 void CGameApplication::DrawMap(const vector<int> &Chunk, int ChunkWidth, int ChunkHeight)
@@ -98,9 +97,8 @@ void CGameApplication::OnRender()
 	GetGraphics()->SetViewPosition(m_ScrollPosition);
 	DrawMap(m_Map, m_MapWidth, m_MapHeight);
 	GetGraphics()->Draw("@", m_PlayerPosition, 10 | FOREGROUND_INTENSITY);
-	GetGraphics()->Flush();
 	//Draw UI
 	GetGraphics()->SetViewPosition(Engine::CPoint(0, 0));
-	GetGraphics()->Draw("UI Draw", Engine::CPoint(20, 0), 20 | FOREGROUND_INTENSITY | FOREGROUND_BLUE, true);
-	GetGraphics()->Draw(m_TimerValue, Engine::CPoint(20, 1), 20 | FOREGROUND_INTENSITY | FOREGROUND_BLUE, true);
+	GetGraphics()->Draw("UI Draw", Engine::CPoint(20, 0), 20 | FOREGROUND_INTENSITY | FOREGROUND_BLUE);
+	GetGraphics()->Draw(m_TimerValue, Engine::CPoint(20, 1), 20 | FOREGROUND_INTENSITY | FOREGROUND_BLUE);
 }

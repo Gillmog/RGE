@@ -1,2 +1,2 @@
 # RGE
-RGE
+Simple roguelike example

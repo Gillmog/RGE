@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "CoreBase.h"
-#include "Application.h"
+#include "RGE/Core.h"
+#include "RGE/Application.h"
 
 class CGameApplication : public Engine::CApplication
 {

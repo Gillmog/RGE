@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "CoreBase.h"
+#include "Core.h"
 
 namespace Engine
 {
 	class CKeyboard
 	{
-		HANDLE m_InputHandle;
+		void* m_InputHandle;
 		DWORD m_NumEvents = 0;
 
 	public:

@@ -1,0 +1,15 @@
+add_library(RGE
+	RGE/Input.h
+	RGE/Input.cpp
+	RGE/Graphics.h
+	RGE/Graphics.cpp
+	RGE/Geometry.h
+	RGE/Geometry.cpp
+	RGE/Core.h
+	RGE/Application.h
+	RGE/Application.cpp
+)
+
+IF (WIN32)
+	add_definitions(-DRGE_WIN)
+ENDIF()

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Application.h"
 
 Engine::CApplication::CApplication(CPoint WindowSize)
@@ -30,6 +29,7 @@ void Engine::CApplication::EventLoop(function<void()> &&Callback)
 		m_pGraphics->Restore();
 		m_pKeyboard->ClearBufferedEnvents();
 		TimeDelta = Timer.GetDuration();
+		Sleep(10);
 	}
 }
 

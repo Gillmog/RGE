@@ -1,9 +1,5 @@
-// BeyondTheBounds.cpp : Defines the entry point for the console application.
-//
-
-#include "stdafx.h"
-#include "CoreBase.h"
-#include "Application.h"
+#include "RGE/Core.h"
+#include "RGE/Application.h"
 #include "GameApplication.h"
 
 int main()

@@ -1,5 +1,5 @@
-#ifndef COREBASE_H
-#define COREBASE_H
+#ifndef CORE_H
+#define CORE_H
 
 #pragma once
 
@@ -18,6 +18,9 @@
 #include <sstream>
 #include "Geometry.h"
 
+typedef unsigned short      WORD;
+typedef unsigned long       DWORD;
+
 using namespace std;
 
-#endif // !COREBASE_H
+#endif // !CORE_H

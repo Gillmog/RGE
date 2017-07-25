@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "CoreBase.h"
+#include "Core.h"
 
 namespace Engine
 {
 	class CGraphics
 	{
-		HANDLE m_WindowHandle;
+		void* m_WindowHandle;
 		CPoint m_WindowSize;
 		CPoint m_FontSize;
 		CPoint m_ViewPosition;
@@ -61,6 +61,10 @@ namespace Engine
 		void Restore();
 
 		void ShowCursor(bool bShow);
+
+		void SetCursorPosition(CPoint Position);
+
+		void SetColor(WORD Color);
 
 		void Draw(const string &Value, CPoint Position, WORD ColorAttr, bool bForce = false);
 

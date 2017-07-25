@@ -1,13 +1,15 @@
-#include "stdafx.h"
 #include "Input.h"
 
 Engine::CKeyboard::CKeyboard()
 {
+#ifdef RGE_WIN
 	m_InputHandle = GetStdHandle(STD_INPUT_HANDLE);
+#endif
 }
 
 void Engine::CKeyboard::OnUpdate()
 {
+#ifdef RGE_WIN
 	DWORD cc;
 	INPUT_RECORD InputRecord;
 
@@ -27,6 +29,7 @@ void Engine::CKeyboard::OnUpdate()
 			m_BufferedEvents[Key.m_KeyCode] = Key;
 		}
 	}
+#endif
 }
 
 void Engine::CKeyboard::ClearBufferedEnvents()

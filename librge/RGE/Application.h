@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "CoreBase.h"
+#include "Core.h"
 #include "Graphics.h"
 #include "Input.h"
 

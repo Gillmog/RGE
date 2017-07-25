@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Geometry.h"
 
 Engine::CPoint::CPoint() : m_X(0), m_Y(0)
