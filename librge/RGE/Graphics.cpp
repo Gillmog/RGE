@@ -126,6 +126,17 @@ void Engine::CGraphics::Restore()
 			assert(0);
 		}
 	}
+#elif defined(RGE_UNIX)
+	struct winsize w;
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+	
+	int CurrentWindowSizeX = w.ws_row;
+	int CurrentWindowSizeY = w.ws_col;
+
+	if (CurrentWindowSizeX != m_WindowSize.m_X - 1 || CurrentWindowSizeY != m_WindowSize.m_Y - 1)
+	{
+		cout << "\e[8;" << m_WindowSize.m_X << ";" << m_WindowSize.m_Y << "t";
+	}
 #endif
 }
 
@@ -136,14 +147,25 @@ void Engine::CGraphics::ShowCursor(bool bShow)
 	GetConsoleCursorInfo(m_WindowHandle, &CursorInfo);
 	CursorInfo.bVisible = bShow;
 	SetConsoleCursorInfo(m_WindowHandle, &CursorInfo);
+#elif defined(RGE_UNIX)
+	if (bShow)
+	{
+		system("setterm -cursor on");
+	}
+	else
+	{
+		system("setterm -cursor off");
+	}
 #endif
 }
 
 void Engine::CGraphics::SetCursorPosition(CPoint Position)
 {
-#ifdef RGE_WIN
+#if defined(RGE_WIN)
 	COORD TopLeft = { (SHORT)Position.m_X, (SHORT)Position.m_Y };
 	SetConsoleCursorPosition(m_WindowHandle, TopLeft);
+#elif defined(RGE_UNIX)
+	printf("\033[%d;%dH", Position.m_X + 1, Position.m_Y + 1);
 #endif
 }
 

@@ -13,3 +13,7 @@ add_library(RGE
 IF (WIN32)
 	add_definitions(-DRGE_WIN)
 ENDIF()
+
+if (UNIX)
+	add_definitions(-DRGE_UNIX)
+ENDIF()

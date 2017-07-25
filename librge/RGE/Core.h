@@ -16,6 +16,7 @@
 #include <set>
 #include <algorithm>
 #include <sstream>
+#include <cstdlib>
 #include "Geometry.h"
 
 typedef unsigned short      WORD;

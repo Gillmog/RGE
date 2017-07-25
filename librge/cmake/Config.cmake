@@ -13,12 +13,16 @@ MACRO (SETUP_APP APP_NAME)
 		SET(CMAKE_C_FLAGS_DEBUG "/D_DEBUG /MDd /Zi /Ob0 /Od /RTC1 /MP /sdl-" CACHE STRING "MSVC C Debug MT flags " FORCE)
 		SET(CMAKE_CXX_FLAGS_DEBUG "/D_DEBUG /MDd /Zi /Ob0 /Od /RTC1 /MP /sdl-" CACHE STRING "MSVC CXX Debug MT flags " FORCE)
 		add_definitions(-DRGE_WIN)
-		add_executable(${APP_NAME} ${SRC})
-		target_link_libraries (${APP_NAME} ${LIBS})
-		link_directories()
-		add_dependencies(${APP_NAME} RGE)
 	ENDIF()
-
+	
+	if (UNIX)
+		add_definitions(-DRGE_UNIX)
+	ENDIF()
+	
+	add_executable(${APP_NAME} ${SRC})
+	target_link_libraries (${APP_NAME} ${LIBS})
+	link_directories()
+	add_dependencies(${APP_NAME} RGE)
 ENDMACRO(SETUP_APP)
 
 MACRO(ADD_RGE RGE_PATH)
