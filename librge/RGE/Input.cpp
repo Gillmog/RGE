@@ -96,9 +96,9 @@ void Engine::CKeyboard::OnUpdate()
             int KeyCode = (int)ch;
             CKey Key;
             Key.m_Ascii = ch;
-	    Key.m_KeyCode = KeyCode;
-	    Key.m_bState = true;
-	    m_BufferedEvents[Key.m_KeyCode] = Key;
+			Key.m_KeyCode = KeyCode;
+			Key.m_bState = true;
+			m_BufferedEvents[Key.m_KeyCode] = Key;
         }
         disable_raw_mode();
         tcflush(0, TCIFLUSH); 

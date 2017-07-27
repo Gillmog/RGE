@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <iostream>
-#ifdef RGE_WINDOWS
+#ifdef RGE_WIN
 #include <tchar.h>
 #include <windows.h>
 #elif defined(RGE_UNIX)

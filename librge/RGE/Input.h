@@ -11,10 +11,8 @@ namespace Engine
 	{
 #if defined(RGE_WIN)
 		void* m_InputHandle;
-#elif defined(RGE_UNIX)
-                int m_InputHandle;
-#endif
 		DWORD m_NumEvents = 0;
+#endif
 
 	public:
 
@@ -227,7 +225,6 @@ namespace Engine
 
 		CKey m_BufferedEvents[256];
 		CKey m_PrevBufferedEvents[256];
-                uint8_t m_Keys[128];
 
 	public:
 

@@ -217,7 +217,6 @@ void Engine::CGraphics::Draw(const string &Value, CPoint Position, WORD ColorAtt
 	Buffer.m_bForce = bForce;
 	
 	m_Buffer[make_pair(Position.m_X, Position.m_Y)] = Buffer;
-	
 }
 
 void Engine::CGraphics::Flush()
