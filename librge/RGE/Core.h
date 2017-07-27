@@ -4,9 +4,21 @@
 #pragma once
 
 #include <stdio.h>
-#include <tchar.h>
 #include <iostream>
+#ifdef RGE_WINDOWS
+#include <tchar.h>
 #include <windows.h>
+#elif defined(RGE_UNIX)
+#include <termios.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <linux/input.h>
+#include <string.h>
+#include <curses.h>
+#define FOREGROUND_INTENSITY 1
+#define FOREGROUND_BLUE 1
+#endif
 #include <vector>
 #include <assert.h>
 #include <ctime>

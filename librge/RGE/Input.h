@@ -9,7 +9,11 @@ namespace Engine
 {
 	class CKeyboard
 	{
+#if defined(RGE_WIN)
 		void* m_InputHandle;
+#elif defined(RGE_UNIX)
+                int m_InputHandle;
+#endif
 		DWORD m_NumEvents = 0;
 
 	public:
@@ -89,7 +93,7 @@ namespace Engine
 			K_OEM_5 = 0xDC, //OEM_5(| \)
 			K_OEM_6 = 0xDD, //OEM_6(}])
 			K_OEM_7 = 0xDE, //OEM_7(" ')
-			K_OEM_8 = 0xDF, //OEM_8(§ !)
+			K_OEM_8 = 0xDF, //OEM_8(ï¿½ !)
 			K_OEM_ATTN = 0xF0, //Oem Attn
 			K_OEM_AUTO = 0xF3, //Auto
 			K_OEM_AX = 0xE1, //Ax
@@ -223,6 +227,7 @@ namespace Engine
 
 		CKey m_BufferedEvents[256];
 		CKey m_PrevBufferedEvents[256];
+                uint8_t m_Keys[128];
 
 	public:
 

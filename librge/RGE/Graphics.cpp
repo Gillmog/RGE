@@ -130,12 +130,12 @@ void Engine::CGraphics::Restore()
 	struct winsize w;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 	
-	int CurrentWindowSizeX = w.ws_row;
-	int CurrentWindowSizeY = w.ws_col;
+	int CurrentWindowSizeY = w.ws_row;
+	int CurrentWindowSizeX = w.ws_col;
 
 	if (CurrentWindowSizeX != m_WindowSize.m_X - 1 || CurrentWindowSizeY != m_WindowSize.m_Y - 1)
 	{
-		cout << "\e[8;" << m_WindowSize.m_X << ";" << m_WindowSize.m_Y << "t";
+		cout << "\e[8;" << m_WindowSize.m_Y << ";" << m_WindowSize.m_X << "t";
 	}
 #endif
 }
@@ -165,7 +165,7 @@ void Engine::CGraphics::SetCursorPosition(CPoint Position)
 	COORD TopLeft = { (SHORT)Position.m_X, (SHORT)Position.m_Y };
 	SetConsoleCursorPosition(m_WindowHandle, TopLeft);
 #elif defined(RGE_UNIX)
-	printf("\033[%d;%dH", Position.m_X + 1, Position.m_Y + 1);
+	printf("\033[%d;%dH", Position.m_Y + 1, Position.m_X + 1);
 #endif
 }
 

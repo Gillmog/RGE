@@ -20,6 +20,7 @@ void Engine::CApplication::EventLoop(function<void()> &&Callback)
 
 	while (true)
 	{
+                m_pGraphics->SetCursorPosition(CPoint(0, 0));
 		m_pKeyboard->OnUpdate();
 		Callback();
 		OnUpdate(Timer.GetDurationInSeconds(), TimeDelta / Timer.GetDuration());
@@ -29,7 +30,11 @@ void Engine::CApplication::EventLoop(function<void()> &&Callback)
 		m_pGraphics->Restore();
 		m_pKeyboard->ClearBufferedEnvents();
 		TimeDelta = Timer.GetDuration();
+#if defined(RGE_WIN)
 		Sleep(10);
+#elif defined(RGE_UNIX)
+                
+#endif
 	}
 }
 

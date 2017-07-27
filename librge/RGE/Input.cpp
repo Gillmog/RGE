@@ -2,14 +2,64 @@
 
 Engine::CKeyboard::CKeyboard()
 {
-#ifdef RGE_WIN
+#if defined(RGE_WIN)
 	m_InputHandle = GetStdHandle(STD_INPUT_HANDLE);
+#elif defined(RGE_UNIX)
+        
 #endif
 }
 
+#if defined(RGE_UNIX)
+void enable_raw_mode()
+{
+    termios term;
+    tcgetattr(0, &term);
+    term.c_lflag &= ~(ICANON | ECHO); // Disable echo as well
+    tcsetattr(0, TCSANOW, &term);
+}
+
+void disable_raw_mode()
+{
+    termios term;
+    tcgetattr(0, &term);
+    term.c_lflag |= ICANON | ECHO;
+    tcsetattr(0, TCSANOW, &term);
+}
+
+bool kbhit()
+{
+    int byteswaiting;
+    ioctl(0, FIONREAD, &byteswaiting);
+    return byteswaiting > 0;
+}
+
+int getkey() {
+    int character;
+    struct termios orig_term_attr;
+    struct termios new_term_attr;
+
+    /* set the terminal to raw mode */
+    tcgetattr(fileno(stdin), &orig_term_attr);
+    memcpy(&new_term_attr, &orig_term_attr, sizeof(struct termios));
+    new_term_attr.c_lflag &= ~(ECHO|ICANON);
+    new_term_attr.c_cc[VTIME] = 0;
+    new_term_attr.c_cc[VMIN] = 0;
+    tcsetattr(fileno(stdin), TCSANOW, &new_term_attr);
+
+    /* read a character from the stdin stream without blocking */
+    /*   returns EOF (-1) if no character is available */
+    character = fgetc(stdin);
+
+    /* restore the original terminal attributes */
+    tcsetattr(fileno(stdin), TCSANOW, &orig_term_attr);
+
+    return character;
+}
+#endif
+
 void Engine::CKeyboard::OnUpdate()
 {
-#ifdef RGE_WIN
+#if defined(RGE_WIN)
 	DWORD cc;
 	INPUT_RECORD InputRecord;
 
@@ -29,16 +79,39 @@ void Engine::CKeyboard::OnUpdate()
 			m_BufferedEvents[Key.m_KeyCode] = Key;
 		}
 	}
+#elif defined(RGE_UNIX)
+        enable_raw_mode();
+        if (kbhit())
+        {
+            char ch = (char)getkey();
+            if (ch == 0 || ch == 224)
+            {
+                ch = (char)getkey();
+            }
+            else
+            {
+                ch = toupper(ch);
+            }
+            ch = toupper(ch);
+            int KeyCode = (int)ch;
+            CKey Key;
+            Key.m_Ascii = ch;
+	    Key.m_KeyCode = KeyCode;
+	    Key.m_bState = true;
+	    m_BufferedEvents[Key.m_KeyCode] = Key;
+        }
+        disable_raw_mode();
+        tcflush(0, TCIFLUSH); 
 #endif
 }
 
 void Engine::CKeyboard::ClearBufferedEnvents()
 {
 	for (int i = 0; i < 256; i++)
-		m_PrevBufferedEvents[i] = m_BufferedEvents[i];
+            m_PrevBufferedEvents[i] = m_BufferedEvents[i];
 
 	for (int i = 0; i < 256; i++)
-		m_BufferedEvents[i].m_bState = false;
+            m_BufferedEvents[i].m_bState = false;
 }
 
 bool Engine::CKeyboard::IsKeyPressed(int KeyCode)

@@ -93,7 +93,7 @@ void CGameApplication::OnUpdate(double Time, double TimeDelta)
 
 void CGameApplication::OnRender()
 {
-	CApplication::OnRender();
+        CApplication::OnRender();
 	GetGraphics()->SetViewPosition(m_ScrollPosition);
 	DrawMap(m_Map, m_MapWidth, m_MapHeight);
 	GetGraphics()->Draw("@", m_PlayerPosition, 10 | FOREGROUND_INTENSITY);
