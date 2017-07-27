@@ -20,7 +20,7 @@ namespace Engine
 
 			string m_Value;
 			CPoint m_Position;
-			WORD m_ColorAttr;
+			CColor m_ColorAttr;
 			bool m_bDirty = false;
 			bool m_bFlush = false;
 			bool m_bForce = false;
@@ -46,6 +46,8 @@ namespace Engine
 
 		void InitBuffer();
 
+		void Fill(const CBuffer &Buffer);
+
 	public:
 
 		CGraphics(CPoint WindowSize);
@@ -64,9 +66,7 @@ namespace Engine
 
 		void SetCursorPosition(CPoint Position);
 
-		void SetColor(WORD Color);
-
-		void Draw(const string &Value, CPoint Position, WORD ColorAttr, bool bForce = false);
+		void Draw(const string &Value, CPoint Position, CColor ColorAttr, bool bForce = false);
 
 		void Flush();
 

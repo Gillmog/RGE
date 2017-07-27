@@ -12,11 +12,11 @@ void CGameApplication::DrawMap(const vector<int> &Chunk, int ChunkWidth, int Chu
 
 			if (CellValue > 0)
 			{
-				GetGraphics()->Draw("#", Engine::CPoint(nCellX, nCellY), 7 | FOREGROUND_INTENSITY);
+				GetGraphics()->Draw("#", Engine::CPoint(nCellX, nCellY), Engine::CColor(1, 1, 1));
 			}
 			else
 			{
-				GetGraphics()->Draw(".", Engine::CPoint(nCellX, nCellY), 8 | FOREGROUND_INTENSITY);
+				GetGraphics()->Draw(".", Engine::CPoint(nCellX, nCellY), Engine::CColor(1, 1, 1));
 			}
 		}
 	}
@@ -96,9 +96,9 @@ void CGameApplication::OnRender()
 	CApplication::OnRender();
 	GetGraphics()->SetViewPosition(m_ScrollPosition);
 	DrawMap(m_Map, m_MapWidth, m_MapHeight);
-	GetGraphics()->Draw("@", m_PlayerPosition, 10 | FOREGROUND_INTENSITY);
+	GetGraphics()->Draw("@", m_PlayerPosition, Engine::CColor(0, 1, 0));
 	//Draw UI
 	GetGraphics()->SetViewPosition(Engine::CPoint(0, 0));
-	GetGraphics()->Draw("UI Draw", Engine::CPoint(20, 0), 20 | FOREGROUND_INTENSITY | FOREGROUND_BLUE);
-	GetGraphics()->Draw(m_TimerValue, Engine::CPoint(20, 1), 20 | FOREGROUND_INTENSITY | FOREGROUND_BLUE);
+	GetGraphics()->Draw("UI Draw", Engine::CPoint(20, 0), Engine::CColor(1, 0, 1, 1, 0, 0, 1, 1));
+	GetGraphics()->Draw(m_TimerValue, Engine::CPoint(20, 1), Engine::CColor(1, 0, 1, 1, 0, 0, 1, 1));
 }

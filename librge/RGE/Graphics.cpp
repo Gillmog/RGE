@@ -14,6 +14,8 @@ Engine::CGraphics::CGraphics(CPoint WindowSize)
 	InitBuffer();
 
 	Restore();
+
+	ClearColor();
 }
 
 Engine::CGraphics::~CGraphics()
@@ -39,7 +41,7 @@ void Engine::CGraphics::InitBuffer()
 			CBuffer Buffer;
 			Buffer.m_Value = "";
 			Buffer.m_Position = CPoint(x, y);
-			Buffer.m_ColorAttr = 15;
+			Buffer.m_ColorAttr = CColor();
 
 			m_Buffer.insert(make_pair(make_pair(x, y), Buffer));
 		}
@@ -76,6 +78,8 @@ void Engine::CGraphics::ClearColor()
 		m_WindowHandle, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
 		Screen.dwSize.X * Screen.dwSize.Y, { 0, 0 }, &Written
 	);
+#elif defined(RGE_UNIX)
+	write(1, "\E[H\E[2J", 7);
 #endif
 
 	SetCursorPosition(CPoint());
@@ -169,14 +173,7 @@ void Engine::CGraphics::SetCursorPosition(CPoint Position)
 #endif
 }
 
-void Engine::CGraphics::SetColor(WORD Color)
-{
-#ifdef RGE_WIN
-	SetConsoleTextAttribute(m_WindowHandle, Color);
-#endif
-}
-
-void Engine::CGraphics::Draw(const string &Value, CPoint Position, WORD ColorAttr, bool bForce/* = false*/)
+void Engine::CGraphics::Draw(const string &Value, CPoint Position, CColor ColorAttr, bool bForce/* = false*/)
 {
 	if (Value.length() > 1)
 	{
@@ -244,13 +241,15 @@ void Engine::CGraphics::Flush()
 
 		if (bClear)
 		{
-			SetColor(15);
-			cout << ' ';
+			CBuffer EmptyBuffer;
+			EmptyBuffer.m_ColorAttr = CColor();
+			EmptyBuffer.m_Value = ' ';
+			EmptyBuffer.m_Position = Buffer.second.m_Position;
+			Fill(EmptyBuffer);
 		}
 		else
 		{
-			SetColor(Buffer.second.m_ColorAttr);
-			cout << Buffer.second.m_Value.c_str();
+			Fill(Buffer.second);
 		}
 
 		Buffer.second.m_bDirty = false;
@@ -258,6 +257,18 @@ void Engine::CGraphics::Flush()
 
 	SetCursorPosition(CPoint());
 	cout.flush();
+}
+
+void Engine::CGraphics::Fill(const CBuffer &Buffer)
+{
+	SetCursorPosition(Buffer.m_Position);
+
+#ifdef RGE_WIN
+	SetConsoleTextAttribute(m_WindowHandle, Buffer.m_ColorAttr.GetColor());
+	cout << Buffer.m_Value.c_str();
+#elif defined(RGE_UNIX)
+	cout << Buffer.m_Value.c_str();
+#endif
 }
 
 void * Engine::CGraphics::GetWindowHandle() const

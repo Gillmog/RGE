@@ -16,8 +16,6 @@
 #include <linux/input.h>
 #include <string.h>
 #include <curses.h>
-#define FOREGROUND_INTENSITY 1
-#define FOREGROUND_BLUE 1
 #endif
 #include <vector>
 #include <assert.h>
@@ -31,8 +29,8 @@
 #include <cstdlib>
 #include "Geometry.h"
 
-typedef unsigned short      WORD;
-typedef unsigned long       DWORD;
+typedef unsigned short WORD;
+typedef unsigned long DWORD;
 
 using namespace std;
 
