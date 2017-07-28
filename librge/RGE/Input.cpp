@@ -10,22 +10,6 @@ Engine::CKeyboard::CKeyboard()
 }
 
 #if defined(RGE_UNIX)
-void enable_raw_mode()
-{
-    termios term;
-    tcgetattr(0, &term);
-    term.c_lflag &= ~(ICANON | ECHO); // Disable echo as well
-    tcsetattr(0, TCSANOW, &term);
-}
-
-void disable_raw_mode()
-{
-    termios term;
-    tcgetattr(0, &term);
-    term.c_lflag |= ICANON | ECHO;
-    tcsetattr(0, TCSANOW, &term);
-}
-
 bool kbhit()
 {
     int byteswaiting;
@@ -80,7 +64,6 @@ void Engine::CKeyboard::OnUpdate()
 		}
 	}
 #elif defined(RGE_UNIX)
-        enable_raw_mode();
         if (kbhit())
         {
             char ch = (char)getkey();
@@ -96,12 +79,10 @@ void Engine::CKeyboard::OnUpdate()
             int KeyCode = (int)ch;
             CKey Key;
             Key.m_Ascii = ch;
-			Key.m_KeyCode = KeyCode;
-			Key.m_bState = true;
-			m_BufferedEvents[Key.m_KeyCode] = Key;
+            Key.m_KeyCode = KeyCode;
+            Key.m_bState = true;
+            m_BufferedEvents[Key.m_KeyCode] = Key;
         }
-        disable_raw_mode();
-        tcflush(0, TCIFLUSH); 
 #endif
 }
 

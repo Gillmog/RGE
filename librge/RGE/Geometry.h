@@ -5,6 +5,8 @@
 
 #include "Core.h"
 
+using namespace std;
+
 namespace Engine
 {
 	class CColor
@@ -41,8 +43,12 @@ namespace Engine
 
 			return *this;
 		}
-
+                
+#ifdef RGE_WIN
 		WORD GetColor() const;
+#elif defined(RGE_UNIX)
+             string GetColor() const;   
+#endif
 	};
 
 	class CPoint

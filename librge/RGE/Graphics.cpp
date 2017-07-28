@@ -4,6 +4,8 @@ Engine::CGraphics::CGraphics(CPoint WindowSize)
 {
 #ifdef RGE_WIN
 	m_WindowHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+#elif defined(RGE_UNIX)
+        setupterm(NULL, STDOUT_FILENO, NULL);
 #endif
 
 	m_WindowSize = WindowSize;
@@ -27,6 +29,8 @@ void Engine::CGraphics::Terminate()
 {
 #ifdef RGE_WIN
 	CloseHandle(m_WindowHandle);
+#elif defined(RGE_UNIX)
+        exit(0);
 #endif
 }
 
@@ -131,15 +135,25 @@ void Engine::CGraphics::Restore()
 		}
 	}
 #elif defined(RGE_UNIX)
+        termios term;
+        tcgetattr(0, &term);
+        term.c_lflag &= ~(ICANON | ECHO); // Disable echo as well
+        tcsetattr(0, TCSANOW, &term);
+
 	struct winsize w;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 	
 	int CurrentWindowSizeY = w.ws_row;
 	int CurrentWindowSizeX = w.ws_col;
 
-	if (CurrentWindowSizeX != m_WindowSize.m_X - 1 || CurrentWindowSizeY != m_WindowSize.m_Y - 1)
+	if (m_PrevWindowSize.m_X != CurrentWindowSizeX || m_PrevWindowSize.m_Y != CurrentWindowSizeY)
 	{
-		cout << "\e[8;" << m_WindowSize.m_Y << ";" << m_WindowSize.m_X << "t";
+            m_PrevWindowSize.m_X = CurrentWindowSizeX;
+            m_PrevWindowSize.m_Y = CurrentWindowSizeY;
+            cout << "\e[8;" << m_WindowSize.m_Y << ";" << m_WindowSize.m_X << "t";
+            ClearColor();
+	    Clear();
+	    InitBuffer();
 	}
 #endif
 }
@@ -154,11 +168,11 @@ void Engine::CGraphics::ShowCursor(bool bShow)
 #elif defined(RGE_UNIX)
 	if (bShow)
 	{
-		system("setterm -cursor on");
+            system("setterm -cursor on");
 	}
 	else
 	{
-		system("setterm -cursor off");
+            system("setterm -cursor off");
 	}
 #endif
 }
@@ -267,7 +281,8 @@ void Engine::CGraphics::Fill(const CBuffer &Buffer)
 	SetConsoleTextAttribute(m_WindowHandle, Buffer.m_ColorAttr.GetColor());
 	cout << Buffer.m_Value.c_str();
 #elif defined(RGE_UNIX)
-	cout << Buffer.m_Value.c_str();
+	//cout << Buffer.m_Value.c_str();
+        cout << Buffer.m_ColorAttr.GetColor().c_str() << Buffer.m_Value.c_str() << "\033[0m";
 #endif
 }
 

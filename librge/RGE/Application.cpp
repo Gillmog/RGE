@@ -33,7 +33,7 @@ void Engine::CApplication::EventLoop(function<void()> &&Callback)
 #if defined(RGE_WIN)
 		Sleep(10);
 #elif defined(RGE_UNIX)
-                
+                sleep(0.01);
 #endif
 	}
 }

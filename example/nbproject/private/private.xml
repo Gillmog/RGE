@@ -11,10 +11,15 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/home/gillmog/Documents/RGE/librge/RGE/Graphics.cpp</file>
+            <file>file:/home/gillmog/Documents/RGE/librge/RGE/Geometry.cpp</file>
             <file>file:/home/gillmog/Documents/RGE/librge/RGE/Application.cpp</file>
+            <file>file:/home/gillmog/Documents/RGE/librge/RGE/Application.h</file>
+            <file>file:/home/gillmog/Documents/RGE/example/src/GameApplication.cpp</file>
+            <file>file:/home/gillmog/Documents/RGE/librge/RGE/Graphics.h</file>
             <file>file:/home/gillmog/Documents/RGE/librge/RGE/Input.cpp</file>
             <file>file:/home/gillmog/Documents/RGE/librge/RGE/Input.h</file>
             <file>file:/home/gillmog/Documents/RGE/example/src/main.cpp</file>
+            <file>file:/home/gillmog/Documents/RGE/librge/RGE/Core.h</file>
         </group>
     </open-files>
 </project-private>

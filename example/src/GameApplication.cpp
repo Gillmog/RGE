@@ -89,6 +89,11 @@ void CGameApplication::OnUpdate(double Time, double TimeDelta)
 			m_ScrollPosition.m_Y--;
 		}
 	}
+        
+        if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_F12))
+	{
+            GetGraphics()->Terminate();
+        }
 }
 
 void CGameApplication::OnRender()
@@ -96,9 +101,9 @@ void CGameApplication::OnRender()
 	CApplication::OnRender();
 	GetGraphics()->SetViewPosition(m_ScrollPosition);
 	DrawMap(m_Map, m_MapWidth, m_MapHeight);
-	GetGraphics()->Draw("@", m_PlayerPosition, Engine::CColor(0, 1, 0));
+	GetGraphics()->Draw("@", m_PlayerPosition, Engine::CColor(0, 1, 0, 1));
 	//Draw UI
 	GetGraphics()->SetViewPosition(Engine::CPoint(0, 0));
-	GetGraphics()->Draw("UI Draw", Engine::CPoint(20, 0), Engine::CColor(1, 0, 1, 1, 0, 0, 1, 1));
+	GetGraphics()->Draw("UI Draw", Engine::CPoint(20, 0), Engine::CColor(1, 0, 1, 1, 0, 0, 1, 0));
 	GetGraphics()->Draw(m_TimerValue, Engine::CPoint(20, 1), Engine::CColor(1, 0, 1, 1, 0, 0, 1, 1));
 }

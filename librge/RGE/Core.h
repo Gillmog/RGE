@@ -10,12 +10,16 @@
 #include <windows.h>
 #elif defined(RGE_UNIX)
 #include <termios.h>
+#include <term.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <linux/input.h>
 #include <string.h>
 #include <curses.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xresource.h>
 #endif
 #include <vector>
 #include <assert.h>

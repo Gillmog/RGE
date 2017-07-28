@@ -11,6 +11,7 @@ namespace Engine
 	{
 		void* m_WindowHandle;
 		CPoint m_WindowSize;
+                CPoint m_PrevWindowSize;
 		CPoint m_FontSize;
 		CPoint m_ViewPosition;
 

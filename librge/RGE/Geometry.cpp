@@ -53,10 +53,10 @@ Engine::CColor::CColor(int Red, int Green, int Blue, int Alpha /*= 1*/, int BGRe
 {
 
 }
-
+#ifdef RGE_WIN
 WORD Engine::CColor::GetColor() const
 {
-#ifdef RGE_WIN
+
 	int Red = 0x0004;
 	int Green = 0x0002;
 	int Blue = 0x0001;
@@ -66,17 +66,28 @@ WORD Engine::CColor::GetColor() const
 	int BGGreen = 0x0020;
 	int BGBlue = 0x0010;
 	int BGAlpha = 0x0080;
-#elif defined(RGE_UNIX)
-	int Red = 31;
-	int Green = 32;
-	int Blue = 34;
-	int Alpha = 1;
 
-	int BGRed = 41;
-	int BGGreen = 42;
-	int BGBlue = 44;
-	int BGAlpha = 1;
-#endif
-
-	return Red * m_Red | Green * m_Green | Blue * m_Blue | m_Alpha * Alpha | BGRed * m_BGRed | BGGreen * m_BGGreen | BGBlue * m_BGBlue | BGAlpha * m_BGAlpha;
+	return Red * m_Red | Green * m_Green | Blue * m_Blue
+                | m_Alpha * Alpha | BGRed * m_BGRed | BGGreen * m_BGGreen 
+                | BGBlue * m_BGBlue | BGAlpha * m_BGAlpha;
 }
+#elif defined(RGE_UNIX)
+string Engine::CColor::GetColor() const
+{
+    int r = m_Red;
+    int g = m_Green << 1;
+    int b = m_Blue << 2;
+    int br = m_BGRed;
+    int bg = m_BGGreen << 1;
+    int bb = m_BGBlue << 2;
+    int Color = (r | g | b);
+    int BgColor = (br | bg | bb);
+    string ColorString = to_string(Color + (30 + (30 * (m_Alpha * 2))));
+    string ColorBGString = to_string(BgColor + (30 + (30 * (m_BGAlpha * 2) + 10)));
+    
+    if (BgColor != 0)
+        return "\e[0;" + ColorBGString + ";" + ColorString + "m";
+    
+    return "\e[0;" + ColorString + "m";
+}
+#endif
