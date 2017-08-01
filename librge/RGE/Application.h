@@ -39,6 +39,8 @@ namespace Engine
 
 		~CApplication();
 
+		void Terminate();
+
 		void EventLoop(function<void()> &&Callback);
 
 		std::shared_ptr<Engine::CGraphics> GetGraphics() const { return m_pGraphics; }

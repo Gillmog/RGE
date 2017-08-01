@@ -11,7 +11,7 @@ namespace Engine
 	{
 		void* m_WindowHandle;
 		CPoint m_WindowSize;
-                CPoint m_PrevWindowSize;
+		CPoint m_PrevWindowSize;
 		CPoint m_FontSize;
 		CPoint m_ViewPosition;
 
@@ -26,14 +26,14 @@ namespace Engine
 			bool m_bFlush = false;
 			bool m_bForce = false;
 
-			CBuffer() 
-                        {
-                        }
+			CBuffer()
+			{
+			}
 
-			CBuffer(const CBuffer &Other) : 
-				m_Value(std::move(Other.m_Value)), 
-				m_Position(Other.m_Position), 
-				m_ColorAttr(Other.m_ColorAttr), 
+			CBuffer(const CBuffer &Other) :
+				m_Value(std::move(Other.m_Value)),
+				m_Position(Other.m_Position),
+				m_ColorAttr(Other.m_ColorAttr),
 				m_bDirty(Other.m_bDirty),
 				m_bFlush(Other.m_bFlush),
 				m_bForce(Other.m_bForce)
@@ -50,19 +50,22 @@ namespace Engine
 		void InitBuffer();
 
 		void Fill(const CBuffer &Buffer);
-                
-                int InitColor(int BGColor, int Offset)
-                {
-                    int StartIndex = 0;
-                    int i = Offset;
-                    for (i; i < (Offset + 8); i++)
-                    {
-                        init_pair(i, StartIndex, BGColor);
-                        StartIndex++;
-                    }
-                  
-                    return i;
-                }
+
+#ifdef RGE_UNIX
+		int InitColor(int BGColor, int Offset)
+		{
+			int StartIndex = 0;
+			int i = Offset;
+			for (i; i < (Offset + 8); i++)
+			{
+				init_pair(i, StartIndex, BGColor);
+				StartIndex++;
+			}
+
+			return i;
+		}
+#endif
+		void Terminate();
 
 	public:
 
@@ -70,7 +73,7 @@ namespace Engine
 
 		~CGraphics();
 
-		void Terminate();
+		void Init();
 
 		void Clear();
 

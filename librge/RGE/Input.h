@@ -7,38 +7,38 @@
 
 namespace Engine
 {
-    class CApplication;
-    
+	class CApplication;
+
 	class CKeyboard
 	{
 		void* m_InputHandle;
-                map<int, int> m_MappedKeys;
+		map<int, int> m_MappedKeys;
 #if defined(RGE_WIN)
 		DWORD m_NumEvents = 0;
 #endif
-                void AddMappedKey(int Key, int KeyCode)
-                {
-                     m_MappedKeys.insert(make_pair(Key, KeyCode));
-                }
-                
-                int ToMappedKey(int Key)
-                {
-                    auto iter = m_MappedKeys.find(Key);
-        
-                    if (iter != m_MappedKeys.end())
-                    {
-                        return iter->second;
-                    }
-                    
-                    iter = m_MappedKeys.find(toupper(Key));
-                    
-                    if (iter != m_MappedKeys.end())
-                    {
-                        return iter->second;
-                    }
-                    
-                    return -1;
-                }
+		void AddMappedKey(int Key, int KeyCode)
+		{
+			m_MappedKeys.insert(make_pair(Key, KeyCode));
+		}
+
+		int ToMappedKey(int Key)
+		{
+			auto iter = m_MappedKeys.find(Key);
+
+			if (iter != m_MappedKeys.end())
+			{
+				return iter->second;
+			}
+
+			iter = m_MappedKeys.find(toupper(Key));
+
+			if (iter != m_MappedKeys.end())
+			{
+				return iter->second;
+			}
+
+			return -1;
+		}
 
 	public:
 
@@ -295,7 +295,7 @@ namespace Engine
 		};
 
 	private:
-		
+
 		struct CKey
 		{
 			char m_Ascii;

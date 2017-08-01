@@ -89,11 +89,11 @@ void CGameApplication::OnUpdate(double Time, double TimeDelta)
 			m_ScrollPosition.m_Y--;
 		}
 	}
-        
-        if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_F12))
+
+	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_F12))
 	{
-            GetGraphics()->Terminate();
-        }
+		Terminate();
+	}
 }
 
 void CGameApplication::OnRender()

@@ -12,15 +12,23 @@ Engine::CApplication::~CApplication()
 
 }
 
+void Engine::CApplication::Terminate()
+{
+	m_pKeyboard.reset();
+	m_pGraphics.reset();
+}
+
 void Engine::CApplication::EventLoop(function<void()> &&Callback)
 {
 	CTimer Timer;
 	Timer.Start();
 	double TimeDelta = Timer.GetDuration();
-
+	
+	m_pGraphics->Init();
+	
 	while (true)
 	{
-                m_pGraphics->SetCursorPosition(CPoint(0, 0));
+		m_pGraphics->SetCursorPosition(CPoint(0, 0));
 		m_pKeyboard->OnUpdate();
 		Callback();
 		OnUpdate(Timer.GetDurationInSeconds(), TimeDelta / Timer.GetDuration());
@@ -33,8 +41,8 @@ void Engine::CApplication::EventLoop(function<void()> &&Callback)
 #if defined(RGE_WIN)
 		Sleep(10);
 #elif defined(RGE_UNIX)
-                refresh();
-                sleep(0.01);
+		refresh();
+		sleep(0.01);
 #endif
 	}
 }
