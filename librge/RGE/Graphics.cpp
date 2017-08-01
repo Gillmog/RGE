@@ -5,7 +5,29 @@ Engine::CGraphics::CGraphics(CPoint WindowSize)
 #ifdef RGE_WIN
 	m_WindowHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 #elif defined(RGE_UNIX)
-        setupterm(NULL, STDOUT_FILENO, NULL);
+        initscr();
+        
+        if (has_colors() == FALSE)
+	{	endwin();
+		printf("Your terminal does not support color\n");
+		exit(1);
+	}
+        
+        cbreak();
+        noecho();
+        WINDOW *win = newwin(WindowSize.m_Y, WindowSize.m_X, 0, 0); 
+        nodelay(win, TRUE); 
+        m_WindowHandle = win;
+        start_color();
+        int Offset = 0;
+        Offset = InitColor(COLOR_BLACK, Offset); 
+        Offset = InitColor(COLOR_RED, Offset);
+        Offset = InitColor(COLOR_GREEN, Offset); 
+        Offset = InitColor(COLOR_YELLOW, Offset); 
+        Offset = InitColor(COLOR_BLUE, Offset); 
+        Offset = InitColor(COLOR_MAGENTA, Offset); 
+        Offset = InitColor(COLOR_CYAN, Offset); 
+        Offset = InitColor(COLOR_WHITE, Offset); 
 #endif
 
 	m_WindowSize = WindowSize;
@@ -30,6 +52,8 @@ void Engine::CGraphics::Terminate()
 #ifdef RGE_WIN
 	CloseHandle(m_WindowHandle);
 #elif defined(RGE_UNIX)
+        WINDOW* win = static_cast<WINDOW*>(m_WindowHandle);
+        delwin(win);  
         exit(0);
 #endif
 }
@@ -43,7 +67,7 @@ void Engine::CGraphics::InitBuffer()
 		for (int x = 0; x < m_WindowSize.m_X; x++)
 		{
 			CBuffer Buffer;
-			Buffer.m_Value = "";
+			Buffer.m_Value = " ";
 			Buffer.m_Position = CPoint(x, y);
 			Buffer.m_ColorAttr = CColor();
 
@@ -83,7 +107,7 @@ void Engine::CGraphics::ClearColor()
 		Screen.dwSize.X * Screen.dwSize.Y, { 0, 0 }, &Written
 	);
 #elif defined(RGE_UNIX)
-	write(1, "\E[H\E[2J", 7);
+        clear();
 #endif
 
 	SetCursorPosition(CPoint());
@@ -135,25 +159,20 @@ void Engine::CGraphics::Restore()
 		}
 	}
 #elif defined(RGE_UNIX)
-        termios term;
-        tcgetattr(0, &term);
-        term.c_lflag &= ~(ICANON | ECHO); // Disable echo as well
-        tcsetattr(0, TCSANOW, &term);
-
-	struct winsize w;
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+        WINDOW* win = static_cast<WINDOW*>(m_WindowHandle);
 	
-	int CurrentWindowSizeY = w.ws_row;
-	int CurrentWindowSizeX = w.ws_col;
+	int CurrentWindowSizeY = getmaxx(win);
+	int CurrentWindowSizeX = getmaxy(win);
 
 	if (m_PrevWindowSize.m_X != CurrentWindowSizeX || m_PrevWindowSize.m_Y != CurrentWindowSizeY)
 	{
             m_PrevWindowSize.m_X = CurrentWindowSizeX;
             m_PrevWindowSize.m_Y = CurrentWindowSizeY;
-            cout << "\e[8;" << m_WindowSize.m_Y << ";" << m_WindowSize.m_X << "t";
+            wresize(win, m_WindowSize.m_Y, m_WindowSize.m_X);
             ClearColor();
 	    Clear();
 	    InitBuffer();
+            wrefresh(win);
 	}
 #endif
 }
@@ -183,7 +202,8 @@ void Engine::CGraphics::SetCursorPosition(CPoint Position)
 	COORD TopLeft = { (SHORT)Position.m_X, (SHORT)Position.m_Y };
 	SetConsoleCursorPosition(m_WindowHandle, TopLeft);
 #elif defined(RGE_UNIX)
-	printf("\033[%d;%dH", Position.m_Y + 1, Position.m_X + 1);
+        WINDOW* win = static_cast<WINDOW*>(m_WindowHandle);
+	wmove(win, Position.m_Y, Position.m_X);
 #endif
 }
 
@@ -232,6 +252,10 @@ void Engine::CGraphics::Draw(const string &Value, CPoint Position, CColor ColorA
 
 void Engine::CGraphics::Flush()
 {
+#if defined(RGE_UNIX)
+       WINDOW* win = static_cast<WINDOW*>(m_WindowHandle);  
+       touchwin(win);
+#endif
 	for (auto &Buffer : m_Buffer)
 	{
 		bool bClear = false;
@@ -270,19 +294,26 @@ void Engine::CGraphics::Flush()
 	}
 
 	SetCursorPosition(CPoint());
+        
+#ifdef RGE_WIN      
 	cout.flush();
+#elif defined(RGE_UNIX)
+       wrefresh(win);
+#endif
 }
 
 void Engine::CGraphics::Fill(const CBuffer &Buffer)
 {
-	SetCursorPosition(Buffer.m_Position);
-
 #ifdef RGE_WIN
+        SetCursorPosition(Buffer.m_Position);
 	SetConsoleTextAttribute(m_WindowHandle, Buffer.m_ColorAttr.GetColor());
 	cout << Buffer.m_Value.c_str();
 #elif defined(RGE_UNIX)
-	//cout << Buffer.m_Value.c_str();
-        cout << Buffer.m_ColorAttr.GetColor().c_str() << Buffer.m_Value.c_str() << "\033[0m";
+        WINDOW* win = static_cast<WINDOW*>(m_WindowHandle);  
+        int Color = Buffer.m_ColorAttr.GetColor() + Buffer.m_ColorAttr.GetBGColor() * 8;
+        wattron(win, COLOR_PAIR (Color));
+        mvwprintw(win, Buffer.m_Position.m_Y, Buffer.m_Position.m_X, Buffer.m_Value.c_str());
+        wattroff(win, COLOR_PAIR (Color));
 #endif
 }
 

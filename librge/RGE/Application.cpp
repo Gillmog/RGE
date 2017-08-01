@@ -4,7 +4,7 @@ Engine::CApplication::CApplication(CPoint WindowSize)
 {
 	m_pGraphics = make_shared<CGraphics>(WindowSize);
 	m_pGraphics->ShowCursor(false);
-	m_pKeyboard = make_shared<CKeyboard>();
+	m_pKeyboard = make_shared<CKeyboard>(this);
 }
 
 Engine::CApplication::~CApplication()
@@ -33,6 +33,7 @@ void Engine::CApplication::EventLoop(function<void()> &&Callback)
 #if defined(RGE_WIN)
 		Sleep(10);
 #elif defined(RGE_UNIX)
+                refresh();
                 sleep(0.01);
 #endif
 	}

@@ -54,7 +54,7 @@ void CGameApplication::OnUpdate(double Time, double TimeDelta)
 	TimeDeltaString << TimeDelta;
 	m_TimerValue = "Time: " + TimeString.str() + " TimeDelta: " + TimeDeltaString.str();
 
-	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_KEY_A))
+	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_LEFT))
 	{
 		if (IsCanMove(Engine::CPoint(m_PlayerPosition.m_X - 1, m_PlayerPosition.m_Y), m_Map, m_MapWidth, m_MapHeight))
 		{
@@ -63,7 +63,7 @@ void CGameApplication::OnUpdate(double Time, double TimeDelta)
 		}
 	}
 
-	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_KEY_D))
+	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_RIGHT))
 	{
 		if (IsCanMove(Engine::CPoint(m_PlayerPosition.m_X + 1, m_PlayerPosition.m_Y), m_Map, m_MapWidth, m_MapHeight))
 		{
@@ -72,7 +72,7 @@ void CGameApplication::OnUpdate(double Time, double TimeDelta)
 		}
 	}
 
-	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_KEY_W))
+	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_UP))
 	{
 		if (IsCanMove(Engine::CPoint(m_PlayerPosition.m_X, m_PlayerPosition.m_Y - 1), m_Map, m_MapWidth, m_MapHeight))
 		{
@@ -81,7 +81,7 @@ void CGameApplication::OnUpdate(double Time, double TimeDelta)
 		}
 	}
 
-	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_KEY_S))
+	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_DOWN))
 	{
 		if (IsCanMove(Engine::CPoint(m_PlayerPosition.m_X, m_PlayerPosition.m_Y + 1), m_Map, m_MapWidth, m_MapHeight))
 		{
@@ -104,6 +104,6 @@ void CGameApplication::OnRender()
 	GetGraphics()->Draw("@", m_PlayerPosition, Engine::CColor(0, 1, 0, 1));
 	//Draw UI
 	GetGraphics()->SetViewPosition(Engine::CPoint(0, 0));
-	GetGraphics()->Draw("UI Draw", Engine::CPoint(20, 0), Engine::CColor(1, 0, 1, 1, 0, 0, 1, 0));
-	GetGraphics()->Draw(m_TimerValue, Engine::CPoint(20, 1), Engine::CColor(1, 0, 1, 1, 0, 0, 1, 1));
+	GetGraphics()->Draw("UI Draw", Engine::CPoint(20, 0), Engine::CColor(1, 0, 1, 1, 0, 0, 1, 1));
+	GetGraphics()->Draw(m_TimerValue, Engine::CPoint(20, 1), Engine::CColor(1, 0, 1, 0, 0, 1, 1, 1));
 }

@@ -1,45 +1,70 @@
 #include "Input.h"
-
-Engine::CKeyboard::CKeyboard()
+#include "Application.h"
+#include "Graphics.h"
+#include <linux/kd.h>
+Engine::CKeyboard::CKeyboard(CApplication *pApp)
 {
 #if defined(RGE_WIN)
-	m_InputHandle = GetStdHandle(STD_INPUT_HANDLE);
+    m_InputHandle = GetStdHandle(STD_INPUT_HANDLE);
 #elif defined(RGE_UNIX)
-        
+      WINDOW* win = static_cast<WINDOW*>(pApp->GetGraphics()->GetWindowHandle());
+      keypad(win, TRUE);
+      meta(win, TRUE);
+      m_InputHandle = win;
+      AddMappedKey('A', K_A);
+      AddMappedKey('B', K_B);
+      AddMappedKey('C', K_C);
+      AddMappedKey('D', K_D);
+      AddMappedKey('E', K_E);
+      AddMappedKey('F', K_F);
+      AddMappedKey('G', K_G);
+      AddMappedKey('H', K_H);
+      AddMappedKey('I', K_I);
+      AddMappedKey('J', K_J);
+      AddMappedKey('K', K_K);
+      AddMappedKey('L', K_L);
+      AddMappedKey('M', K_M);
+      AddMappedKey('N', K_N);
+      AddMappedKey('O', K_O);
+      AddMappedKey('P', K_P);
+      AddMappedKey('Q', K_Q);
+      AddMappedKey('R', K_R);
+      AddMappedKey('S', K_S);
+      AddMappedKey('T', K_T);
+      AddMappedKey('U', K_U);
+      AddMappedKey('V', K_V);
+      AddMappedKey('W', K_W);
+      AddMappedKey('X', K_X);
+      AddMappedKey('Y', K_Y);
+      AddMappedKey('Z', K_Z);
+      AddMappedKey('0', K_0);
+      AddMappedKey('1', K_1);
+      AddMappedKey('2', K_2);
+      AddMappedKey('3', K_3);
+      AddMappedKey('4', K_4);
+      AddMappedKey('5', K_5);
+      AddMappedKey('6', K_6);
+      AddMappedKey('8', K_8);
+      AddMappedKey('9', K_9);
+      AddMappedKey(258, K_DOWN);
+      AddMappedKey(259, K_UP);
+      AddMappedKey(260, K_LEFT);
+      AddMappedKey(261, K_RIGHT);
+      AddMappedKey(265, K_F1);
+      AddMappedKey(266, K_F2);
+      AddMappedKey(267, K_F3);
+      AddMappedKey(268, K_F4);
+      AddMappedKey(269, K_F5);
+      AddMappedKey(270, K_F6);
+      AddMappedKey(271, K_F7);
+      AddMappedKey(272, K_F8);
+      AddMappedKey(273, K_F9);
+      AddMappedKey(274, K_F10);
+      AddMappedKey(275, K_F11);
+      AddMappedKey(276, K_F12);
+      AddMappedKey(330, K_DELETE);
 #endif
 }
-
-#if defined(RGE_UNIX)
-bool kbhit()
-{
-    int byteswaiting;
-    ioctl(0, FIONREAD, &byteswaiting);
-    return byteswaiting > 0;
-}
-
-int getkey() {
-    int character;
-    struct termios orig_term_attr;
-    struct termios new_term_attr;
-
-    /* set the terminal to raw mode */
-    tcgetattr(fileno(stdin), &orig_term_attr);
-    memcpy(&new_term_attr, &orig_term_attr, sizeof(struct termios));
-    new_term_attr.c_lflag &= ~(ECHO|ICANON);
-    new_term_attr.c_cc[VTIME] = 0;
-    new_term_attr.c_cc[VMIN] = 0;
-    tcsetattr(fileno(stdin), TCSANOW, &new_term_attr);
-
-    /* read a character from the stdin stream without blocking */
-    /*   returns EOF (-1) if no character is available */
-    character = fgetc(stdin);
-
-    /* restore the original terminal attributes */
-    tcsetattr(fileno(stdin), TCSANOW, &orig_term_attr);
-
-    return character;
-}
-#endif
 
 void Engine::CKeyboard::OnUpdate()
 {
@@ -64,24 +89,21 @@ void Engine::CKeyboard::OnUpdate()
 		}
 	}
 #elif defined(RGE_UNIX)
-        if (kbhit())
+        WINDOW* win = static_cast<WINDOW*>(m_InputHandle);
+        int ch = wgetch(win);
+  
+        if (ch != ERR)
         {
-            char ch = (char)getkey();
-            if (ch == 0 || ch == 224)
+            int MappedKey = ToMappedKey(ch);
+                  
+            if (MappedKey != -1)
             {
-                ch = (char)getkey();
+                CKey Key;
+                Key.m_Ascii = (char)ch;
+                Key.m_KeyCode = MappedKey;
+                Key.m_bState = true;
+                m_BufferedEvents[Key.m_KeyCode] = Key;
             }
-            else
-            {
-                ch = toupper(ch);
-            }
-            ch = toupper(ch);
-            int KeyCode = (int)ch;
-            CKey Key;
-            Key.m_Ascii = ch;
-            Key.m_KeyCode = KeyCode;
-            Key.m_bState = true;
-            m_BufferedEvents[Key.m_KeyCode] = Key;
         }
 #endif
 }

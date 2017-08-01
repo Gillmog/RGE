@@ -47,7 +47,8 @@ namespace Engine
 #ifdef RGE_WIN
 		WORD GetColor() const;
 #elif defined(RGE_UNIX)
-             string GetColor() const;   
+             int GetColor() const;  
+             int GetBGColor() const;   
 #endif
 	};
 

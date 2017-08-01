@@ -26,7 +26,9 @@ namespace Engine
 			bool m_bFlush = false;
 			bool m_bForce = false;
 
-			CBuffer(){}
+			CBuffer() 
+                        {
+                        }
 
 			CBuffer(const CBuffer &Other) : 
 				m_Value(std::move(Other.m_Value)), 
@@ -48,6 +50,19 @@ namespace Engine
 		void InitBuffer();
 
 		void Fill(const CBuffer &Buffer);
+                
+                int InitColor(int BGColor, int Offset)
+                {
+                    int StartIndex = 0;
+                    int i = Offset;
+                    for (i; i < (Offset + 8); i++)
+                    {
+                        init_pair(i, StartIndex, BGColor);
+                        StartIndex++;
+                    }
+                  
+                    return i;
+                }
 
 	public:
 

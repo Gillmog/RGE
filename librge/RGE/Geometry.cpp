@@ -72,22 +72,19 @@ WORD Engine::CColor::GetColor() const
                 | BGBlue * m_BGBlue | BGAlpha * m_BGAlpha;
 }
 #elif defined(RGE_UNIX)
-string Engine::CColor::GetColor() const
+int Engine::CColor::GetBGColor() const
+{
+    int br = m_BGRed;
+    int bg = m_BGGreen << 1;
+    int bb = m_BGBlue << 2;
+    return (br | bg | bb) * m_BGAlpha;
+}
+
+int Engine::CColor::GetColor() const
 {
     int r = m_Red;
     int g = m_Green << 1;
     int b = m_Blue << 2;
-    int br = m_BGRed;
-    int bg = m_BGGreen << 1;
-    int bb = m_BGBlue << 2;
-    int Color = (r | g | b);
-    int BgColor = (br | bg | bb);
-    string ColorString = to_string(Color + (30 + (30 * (m_Alpha * 2))));
-    string ColorBGString = to_string(BgColor + (30 + (30 * (m_BGAlpha * 2) + 10)));
-    
-    if (BgColor != 0)
-        return "\e[0;" + ColorBGString + ";" + ColorString + "m";
-    
-    return "\e[0;" + ColorString + "m";
+    return (r | g | b) * m_Alpha;
 }
 #endif

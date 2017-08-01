@@ -16,10 +16,8 @@
 #include <unistd.h>
 #include <linux/input.h>
 #include <string.h>
-#include <curses.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xresource.h>
+#include <ncurses.h>
+#include <signal.h>
 #endif
 #include <vector>
 #include <assert.h>
