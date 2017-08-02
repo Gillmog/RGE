@@ -73,6 +73,8 @@ namespace Engine
 
 		~CGraphics();
 
+		void SetWindowTitle(const string &Title);
+
 		void Init();
 
 		void Clear();
@@ -92,6 +94,8 @@ namespace Engine
 		void *GetWindowHandle() const;
 		CPoint GetViewPosition() const { return m_ViewPosition; }
 		void SetViewPosition(CPoint val) { m_ViewPosition = val; }
+
+		CPoint GetWindowSize() { return m_WindowSize; }
 	};
 }
 

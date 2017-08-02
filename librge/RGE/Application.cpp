@@ -1,10 +1,11 @@
 #include "Application.h"
 
-Engine::CApplication::CApplication(CPoint WindowSize)
+Engine::CApplication::CApplication(CPoint WindowSize, const string &WindowTitle)
 {
 	m_pGraphics = make_shared<CGraphics>(WindowSize);
 	m_pGraphics->ShowCursor(false);
 	m_pKeyboard = make_shared<CKeyboard>(this);
+	m_pGraphics->SetWindowTitle(WindowTitle);
 }
 
 Engine::CApplication::~CApplication()
@@ -28,6 +29,7 @@ void Engine::CApplication::EventLoop(function<void()> &&Callback)
 	
 	while (true)
 	{
+		m_pGraphics->Restore();
 		m_pGraphics->SetCursorPosition(CPoint(0, 0));
 		m_pKeyboard->OnUpdate();
 		Callback();
@@ -35,7 +37,6 @@ void Engine::CApplication::EventLoop(function<void()> &&Callback)
 		OnRenderBegin();
 		OnRender();
 		OnRenderEnd();
-		m_pGraphics->Restore();
 		m_pKeyboard->ClearBufferedEnvents();
 		TimeDelta = Timer.GetDuration();
 #if defined(RGE_WIN)
@@ -60,6 +61,34 @@ void Engine::CApplication::OnRender()
 void Engine::CApplication::OnRenderEnd()
 {
 	GetGraphics()->Flush();
+}
+
+std::string Engine::CApplication::GetPath()
+{
+#ifdef RGE_WIN
+
+	char Path[MAX_PATH + 1];
+
+	if (GetModuleFileNameA(NULL, Path, MAX_PATH))
+	{
+		if (PathRemoveFileSpecA(Path))
+		{
+			return Path;
+		}
+	}
+#elif RGE_UNIX
+	char Path[1024];
+
+	size_t Size = sizeof(Path);
+
+	int n = readlink("/proc/self/exe", Path, Size - 1);
+	if (n == -1)
+		return "";
+
+	Path[n] = '\0';
+
+	return dirname(Path);
+#endif
 }
 
 Engine::CTimer::CTimer() : m_Start(0), m_bStart(false)

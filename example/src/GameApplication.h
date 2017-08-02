@@ -43,6 +43,24 @@ class CGameApplication : public Engine::CApplication
 		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	};
 
+	enum EGameSate
+	{
+		STATE_MENU,
+		STATE_GAME
+	};
+
+	enum EMenuSate
+	{
+		STATE_MENU_NEW_GAME = 0,
+		STATE_MENU_EXIT_GAME
+	};
+
+	EGameSate m_GameState;
+	int m_MenuState;
+
+	Engine::CColor m_MenuSelectedColor;
+	Engine::CColor m_MenuTextColor;
+
 	int m_MapWidth = 32;
 	int m_MapHeight = 32;
 
@@ -55,9 +73,12 @@ class CGameApplication : public Engine::CApplication
 
 	bool IsCanMove(const Engine::CPoint &Position, const vector<int> &Chunk, int ChunkWidth, int ChunkHeight);
 
+	void UpdateMenu();
+	void RenderMenu();
+
 public:
 
-	CGameApplication(const Engine::CPoint &WindowSize);
+	CGameApplication(const Engine::CPoint &WindowSize, const string &WindowTitle);
 	~CGameApplication();
 
 	void OnUpdate(double Time, double TimeDelta) override;

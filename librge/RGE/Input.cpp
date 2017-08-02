@@ -57,6 +57,7 @@ Engine::CKeyboard::CKeyboard(CApplication *pApp)
 	AddMappedKey(VK_F10, K_F10);
 	AddMappedKey(VK_F11, K_F11);
 	AddMappedKey(VK_F12, K_F12);
+	AddMappedKey(VK_RETURN, K_BACKSPACE);
 	AddMappedKey(VK_DELETE, K_DELETE);
 	AddMappedKey(VK_ESCAPE, K_ESC);
 #elif defined(RGE_UNIX)

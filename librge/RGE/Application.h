@@ -35,7 +35,7 @@ namespace Engine
 
 	public:
 
-		CApplication(CPoint WindowSize);
+		CApplication(CPoint WindowSize, const string &WindowTitle);
 
 		~CApplication();
 
@@ -50,6 +50,8 @@ namespace Engine
 		virtual void OnRenderBegin();
 		virtual void OnRender();
 		virtual void OnRenderEnd();
+
+		string GetPath();
 	};
 }
 

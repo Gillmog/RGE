@@ -42,13 +42,22 @@ Engine::CGraphics::~CGraphics()
 	Terminate();
 }
 
+void Engine::CGraphics::SetWindowTitle(const string &Title)
+{
+#ifdef RGE_WIN
+	SetConsoleTitle(Title.c_str());
+#elif defined(RGE_UNIX)
+	printf("%c]0;%s%c", '\033', Title.c_str(), '\007');
+#endif
+}
+
 void Engine::CGraphics::Init()
 {
+	ClearColor();
+
 	InitBuffer();
 
 	Restore();
-
-	ClearColor();
 }
 
 void Engine::CGraphics::Terminate()
@@ -67,9 +76,9 @@ void Engine::CGraphics::InitBuffer()
 {
 	m_Buffer.clear();
 
-	for (int y = 0; y < m_WindowSize.m_Y; y++)
+	for (int y = 0; y < m_WindowSize.m_Y - 1; y++)
 	{
-		for (int x = 0; x < m_WindowSize.m_X; x++)
+		for (int x = 0; x < m_WindowSize.m_X - 1; x++)
 		{
 			CBuffer Buffer;
 			Buffer.m_Value = " ";
@@ -102,7 +111,7 @@ void Engine::CGraphics::ClearColor()
 #ifdef RGE_WIN
 	CONSOLE_SCREEN_BUFFER_INFO Screen;
 	DWORD Written;
-
+	
 	FillConsoleOutputCharacterA(
 		m_WindowHandle, ' ', m_WindowSize.m_X * m_WindowSize.m_Y, { 0, 0 }, &Written
 	);
@@ -126,14 +135,15 @@ void Engine::CGraphics::Restore()
 	int CurrentWindowSizeX = csbi.srWindow.Right - csbi.srWindow.Left;
 	int CurrentWindowSizeY = csbi.srWindow.Bottom - csbi.srWindow.Top;
 
-	if (CurrentWindowSizeX != m_WindowSize.m_X - 1 || CurrentWindowSizeY != m_WindowSize.m_Y - 1)
+	if (CurrentWindowSizeX != m_PrevWindowSize.m_X || CurrentWindowSizeY != m_PrevWindowSize.m_Y)
 	{
+		m_PrevWindowSize.m_X = CurrentWindowSizeX;
+		m_PrevWindowSize.m_Y = CurrentWindowSizeY;
 		COORD WindowSize = { (SHORT)m_WindowSize.m_X, (SHORT)m_WindowSize.m_Y };
 		::SetConsoleScreenBufferSize(m_WindowHandle, WindowSize);
 		SMALL_RECT rc = { 0, 0, (SHORT)m_WindowSize.m_X - 1, (SHORT)m_WindowSize.m_Y - 1 };
 		::SetConsoleWindowInfo(m_WindowHandle, TRUE, &rc);
 		ClearColor();
-		Clear();
 		InitBuffer();
 	}
 
@@ -161,6 +171,8 @@ void Engine::CGraphics::Restore()
 		{
 			assert(0);
 		}
+
+		m_PrevWindowSize = CPoint();
 	}
 #elif defined(RGE_UNIX)
 	WINDOW* win = static_cast<WINDOW*>(m_WindowHandle);
@@ -174,7 +186,6 @@ void Engine::CGraphics::Restore()
 		m_PrevWindowSize.m_Y = CurrentWindowSizeY;
 		wresize(win, m_WindowSize.m_Y, m_WindowSize.m_X);
 		ClearColor();
-		Clear();
 		InitBuffer();
 		wrefresh(win);
 	}
@@ -203,8 +214,8 @@ void Engine::CGraphics::ShowCursor(bool bShow)
 void Engine::CGraphics::SetCursorPosition(CPoint Position)
 {
 #if defined(RGE_WIN)
-	COORD TopLeft = { (SHORT)Position.m_X, (SHORT)Position.m_Y };
-	SetConsoleCursorPosition(m_WindowHandle, TopLeft);
+	COORD Pos = { (SHORT)Position.m_X, (SHORT)Position.m_Y };
+	SetConsoleCursorPosition(m_WindowHandle, Pos);
 #elif defined(RGE_UNIX)
 	WINDOW* win = static_cast<WINDOW*>(m_WindowHandle);
 	wmove(win, Position.m_Y, Position.m_X);
@@ -245,8 +256,12 @@ void Engine::CGraphics::Draw(const string &Value, CPoint Position, CColor ColorA
 	Buffer.m_ColorAttr = ColorAttr;
 
 	string CurrentValue = m_Buffer[make_pair(Position.m_X, Position.m_Y)].m_Value;
+	CColor CurrentColor = m_Buffer[make_pair(Position.m_X, Position.m_Y)].m_ColorAttr;
 
 	if (CurrentValue != Value && Buffer.m_bDirty == false)
+		Buffer.m_bDirty = true;
+
+	if (CurrentColor != ColorAttr && Buffer.m_bDirty == false)
 		Buffer.m_bDirty = true;
 
 	Buffer.m_bForce = bForce;

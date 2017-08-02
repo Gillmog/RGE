@@ -43,6 +43,31 @@ namespace Engine
 
 			return *this;
 		}
+
+		bool operator==(const CColor &Other)
+		{
+			return m_Red == Other.m_Red &&
+				m_Green == Other.m_Green &&
+				m_Blue == Other.m_Blue &&
+				m_Alpha == Other.m_Alpha &&
+				m_BGRed == Other.m_BGRed &&
+				m_BGGreen == Other.m_BGGreen &&
+				m_BGBlue == Other.m_BGBlue &&
+				m_BGAlpha == Other.m_BGAlpha;
+		}
+
+		bool operator!=(const CColor &Other)
+		{
+			return m_Red != Other.m_Red ||
+				m_Green != Other.m_Green ||
+				m_Blue != Other.m_Blue ||
+				m_Alpha != Other.m_Alpha ||
+				m_BGRed != Other.m_BGRed ||
+				m_BGGreen != Other.m_BGGreen ||
+				m_BGBlue != Other.m_BGBlue ||
+				m_BGAlpha != Other.m_BGAlpha;
+		}
+
                 
 #ifdef RGE_WIN
 		WORD GetColor() const;
@@ -73,10 +98,60 @@ namespace Engine
 			return *this;
 		}
 
+		bool operator==(const CPoint &Other)
+		{
+			return m_X == Other.m_X && m_Y == Other.m_Y;
+		}
+
+		bool operator!=(const CPoint &Other)
+		{
+			return m_X != Other.m_X || m_Y != Other.m_Y;
+		}
+
 		CPoint &operator+(const CPoint &Other)
 		{
 			m_X += Other.m_X;
 			m_Y += Other.m_Y;
+
+			return *this;
+		}
+
+		CPoint &operator+(const int &Other)
+		{
+			m_X += Other;
+			m_Y += Other;
+
+			return *this;
+		}
+
+		CPoint &operator/(const CPoint &Other)
+		{
+			m_X /= Other.m_X;
+			m_Y /= Other.m_Y;
+
+			return *this;
+		}
+
+		CPoint &operator/(const int &Other)
+		{
+			m_X /= Other;
+			m_Y /= Other;
+
+			return *this;
+		}
+
+		CPoint &operator-(const int &Other)
+		{
+			m_X -= Other;
+			m_Y -= Other;
+
+			return *this;
+		}
+
+		CPoint &operator-(const CPoint &Other)
+		{
+			m_X -= Other.m_X;
+			m_Y -= Other.m_Y;
 
 			return *this;
 		}

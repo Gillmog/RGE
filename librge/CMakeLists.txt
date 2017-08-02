@@ -8,6 +8,8 @@ add_library(RGE
 	RGE/Core.h
 	RGE/Application.h
 	RGE/Application.cpp
+	RGE/Archive.cpp
+	RGE/Archive.h
 )
 
 IF (WIN32)
