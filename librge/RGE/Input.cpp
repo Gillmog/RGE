@@ -40,7 +40,6 @@ Engine::CKeyboard::CKeyboard(CApplication *pApp)
 	AddMappedKey('8', K_8);
 	AddMappedKey('9', K_9);
 #if defined(RGE_WIN)
-	m_InputHandle = GetStdHandle(STD_INPUT_HANDLE);
 	AddMappedKey(VK_DOWN, K_DOWN);
 	AddMappedKey(VK_UP, K_UP);
 	AddMappedKey(VK_LEFT, K_LEFT);
@@ -61,10 +60,6 @@ Engine::CKeyboard::CKeyboard(CApplication *pApp)
 	AddMappedKey(VK_DELETE, K_DELETE);
 	AddMappedKey(VK_ESCAPE, K_ESC);
 #elif defined(RGE_UNIX)
-	WINDOW* win = static_cast<WINDOW*>(pApp->GetGraphics()->GetWindowHandle());
-	keypad(win, TRUE);
-	meta(win, TRUE);
-	m_InputHandle = win;
 	AddMappedKey(258, K_DOWN);
 	AddMappedKey(259, K_UP);
 	AddMappedKey(260, K_LEFT);
@@ -85,36 +80,34 @@ Engine::CKeyboard::CKeyboard(CApplication *pApp)
 #endif
 }
 
-void Engine::CKeyboard::OnUpdate()
-{
 #if defined(RGE_WIN)
-	DWORD cc;
-	INPUT_RECORD InputRecord;
-
-	GetNumberOfConsoleInputEvents(m_InputHandle, &m_NumEvents);
-
-	if (m_NumEvents != 0)
+void Engine::CKeyboard::OnEvent(const INPUT_RECORD &Event)
+{
+	if (Event.EventType == KEY_EVENT && ((KEY_EVENT_RECORD&)Event.Event).bKeyDown)
 	{
-		ReadConsoleInput(m_InputHandle, &InputRecord, 1, &cc);
+		KEY_EVENT_RECORD KeyRecord = (KEY_EVENT_RECORD&)Event.Event;
 
-		if (InputRecord.EventType == KEY_EVENT && ((KEY_EVENT_RECORD&)InputRecord.Event).bKeyDown)
+		int MappedKey = ToMappedKey(KeyRecord.wVirtualKeyCode);
+
+		if (MappedKey != -1)
 		{
-			KEY_EVENT_RECORD KeyRecord = (KEY_EVENT_RECORD&)InputRecord.Event;
-
-			int MappedKey = ToMappedKey(KeyRecord.wVirtualKeyCode);
-
-			if (MappedKey)
-			{
-				CKey Key;
-				Key.m_Ascii = KeyRecord.uChar.AsciiChar;
-				Key.m_KeyCode = MappedKey;
-				Key.m_bState = true;
-				m_BufferedEvents[Key.m_KeyCode] = Key;
-			}
+			CKey Key;
+			Key.m_Ascii = KeyRecord.uChar.AsciiChar;
+			Key.m_KeyCode = MappedKey;
+			Key.m_bState = true;
+			m_BufferedEvents[Key.m_KeyCode] = Key;
 		}
 	}
+}
+#endif
+
+void Engine::CKeyboard::OnUpdate(CEvents *pEvents)
+{
+#if defined(RGE_WIN)
+
+	
 #elif defined(RGE_UNIX)
-	WINDOW* win = static_cast<WINDOW*>(m_InputHandle);
+	WINDOW* win = static_cast<WINDOW*>(pEvents->m_InputHandle);
 	int ch = wgetch(win);
 
 	if (ch != ERR)
@@ -150,4 +143,112 @@ bool Engine::CKeyboard::IsKeyPressed(int KeyCode)
 bool Engine::CKeyboard::IsKeyReleased(int KeyCode)
 {
 	return !m_BufferedEvents[KeyCode].m_bState && m_PrevBufferedEvents[KeyCode].m_bState;
+}
+
+Engine::CMouse::CMouse(CApplication *pApp)
+{
+#if defined(RGE_WIN)
+	
+#elif defined(RGE_UNIX)
+
+#endif
+}
+
+bool Engine::CMouse::IsPressed(int Button)
+{
+	if (Button >= 5)
+		return false;
+
+	return m_BufferedEvents[Button].m_bState;
+}
+
+bool Engine::CMouse::IsReleased(int Button)
+{
+	if (Button >= 5)
+		return false;
+
+	return !m_BufferedEvents[Button].m_bState && m_PrevBufferedEvents[Button].m_bState;
+}
+
+#if defined(RGE_WIN)
+void Engine::CMouse::OnEvent(const INPUT_RECORD &Event)
+{
+	if (Event.EventType == MOUSE_EVENT)
+	{
+		MOUSE_EVENT_RECORD MouseRecord = (MOUSE_EVENT_RECORD&)Event.Event;
+		DWORD EventFlag = MouseRecord.dwEventFlags;
+
+		switch (EventFlag)
+		{
+		case 0:
+		{
+			int nButton = -1;
+
+			if (MouseRecord.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+			{
+				nButton = 0;
+			}
+			else if (MouseRecord.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
+			{
+				nButton = 1;
+			}
+			else if (MouseRecord.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
+			{
+				nButton = 2;
+			}
+			else if (MouseRecord.dwButtonState == FROM_LEFT_3RD_BUTTON_PRESSED)
+			{
+				nButton = 3;
+			}
+			else if (MouseRecord.dwButtonState == FROM_LEFT_4TH_BUTTON_PRESSED)
+			{
+				nButton = 4;
+			}
+
+			if (nButton != -1)
+			{
+				CButton Button;
+				Button.m_Position = CPoint((int)MouseRecord.dwMousePosition.X, (int)MouseRecord.dwMousePosition.Y);
+				Button.m_bState = true;
+				m_BufferedEvents[nButton] = Button;
+				m_MousePosition = CPoint((int)MouseRecord.dwMousePosition.X, (int)MouseRecord.dwMousePosition.Y);
+			}
+			else
+			{
+				for (int i = 0; i < 5; i++)
+					m_BufferedEvents[i].m_bState = false;
+			}
+
+			m_MousePosition = CPoint((int)MouseRecord.dwMousePosition.X, (int)MouseRecord.dwMousePosition.Y);
+		}
+			break;
+		case MOUSE_HWHEELED:
+			m_MouseWheel = 1;
+			break;
+		case MOUSE_MOVED:
+			m_MousePosition = CPoint((int)MouseRecord.dwMousePosition.X, (int)MouseRecord.dwMousePosition.Y);
+			break;
+		case MOUSE_WHEELED:
+			m_MouseWheel = -1;
+			break;
+		default:
+			break;
+		}
+	}
+}
+#endif
+
+void Engine::CMouse::OnUpdate(CEvents *pEvents)
+{
+#if defined(RGE_WIN)
+	
+#elif defined(RGE_UNIX)
+
+#endif
+}
+
+void Engine::CMouse::ClearBufferedEnvents()
+{
+	for (int i = 0; i < 5; i++)
+		m_PrevBufferedEvents[i] = m_BufferedEvents[i];
 }

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Core.h"
+#include "Sprite.h"
 
 namespace Engine
 {
@@ -87,6 +88,7 @@ namespace Engine
 
 		void SetCursorPosition(CPoint Position);
 
+		void Draw(CSprite *pSprite, bool bForce = false);
 		void Draw(const string &Value, CPoint Position, CColor ColorAttr, bool bForce = false);
 
 		void Flush();

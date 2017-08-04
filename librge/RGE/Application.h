@@ -32,6 +32,8 @@ namespace Engine
 	{
 		shared_ptr<CGraphics> m_pGraphics;
 		shared_ptr<CKeyboard> m_pKeyboard;
+		shared_ptr<CMouse> m_pMouse;
+		shared_ptr<CEvents> m_pInputEvents;
 
 	public:
 
@@ -45,6 +47,7 @@ namespace Engine
 
 		std::shared_ptr<Engine::CGraphics> GetGraphics() const { return m_pGraphics; }
 		std::shared_ptr<Engine::CKeyboard> GetKeyboard() const { return m_pKeyboard; }
+		std::shared_ptr<Engine::CMouse> GetMouse() const { return m_pMouse; }
 
 		virtual void OnUpdate(double Time, double TimeDelta) {}
 		virtual void OnRenderBegin();
@@ -52,6 +55,31 @@ namespace Engine
 		virtual void OnRenderEnd();
 
 		string GetPath();
+	};
+
+	class CEvents
+	{
+		DWORD m_fdwSaveOldMode;
+		CApplication *m_pApplication;
+
+#if defined(RGE_WIN)
+		VOID ErrorExit(LPSTR lpszMessage);
+#endif
+
+	public:
+
+		void* m_InputHandle;
+#if defined(RGE_WIN)
+		INPUT_RECORD m_InputRecord[128];
+		DWORD m_NumEvents = 0;
+		DWORD m_NumberOfEventsRead = 0;
+#endif
+
+		CEvents(CApplication *pApp);
+
+		~CEvents();
+
+		void ReadEvents();
 	};
 }
 

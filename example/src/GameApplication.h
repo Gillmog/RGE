@@ -5,6 +5,8 @@
 
 #include "RGE/Core.h"
 #include "RGE/Application.h"
+#include "RGE/Sprite.h"
+#include "RGE/Archive.h"
 
 class CGameApplication : public Engine::CApplication
 {
@@ -43,16 +45,54 @@ class CGameApplication : public Engine::CApplication
 		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	};
 
+	vector<int> m_ExampleLogo = {
+		0,1,1,0,0,0,1,1,0,0,1,1,1,1,
+		1,0,1,0,0,1,0,0,1,0,1,0,0,0,
+		1,0,1,0,0,1,0,0,0,0,1,1,1,1,
+		1,1,1,0,0,1,0,1,1,0,1,0,0,0,
+		1,0,0,1,0,1,0,0,1,0,1,0,0,0,
+		1,0,0,1,0,0,1,1,1,0,1,1,1,1,
+	};
+
+	vector<int> m_ExampleLogoFrame1 = {
+		0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,1,0,0,0,
+		0,0,0,0,0,0,0,1,0,0,1,0,0,0,
+		0,0,0,1,0,0,1,0,0,0,0,1,0,0,
+		1,0,0,1,0,0,1,1,1,0,1,1,1,1,
+	};
+
+	vector<int> m_ExampleLogoFrame2 = {
+		0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,1,0,0,0,0,
+		0,0,0,0,0,0,0,1,0,0,1,0,0,0,
+		0,0,0,1,0,0,0,1,0,0,0,0,0,0,
+		0,0,0,1,0,0,1,0,0,0,0,1,0,0,
+		1,0,0,1,0,0,1,1,1,0,1,1,1,1,
+	};
+
+	vector<int> m_ExampleLogoFrame3 = {
+		0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,1,0,1,0,0,0,0,1,0,0,0,0,
+		0,1,0,1,0,0,0,1,0,0,1,0,0,0,
+		0,0,0,1,0,1,0,1,0,0,0,0,0,0,
+		0,0,0,1,0,0,1,0,0,0,0,1,0,0,
+		1,0,0,1,0,0,1,1,1,0,1,1,1,1,
+	};
+
 	enum EGameSate
 	{
 		STATE_MENU,
-		STATE_GAME
+		STATE_GAME,
+		STATE_EDITOR
 	};
 
 	enum EMenuSate
 	{
 		STATE_MENU_NEW_GAME = 0,
-		STATE_MENU_EXIT_GAME
+		STATE_MENU_EDITOR,
+		STATE_MENU_EXIT_GAME,
 	};
 
 	EGameSate m_GameState;
@@ -67,6 +107,10 @@ class CGameApplication : public Engine::CApplication
 	Engine::CPoint m_PlayerPosition;
 	Engine::CPoint m_ScrollPosition;
 	string m_TimerValue;
+	float m_FrameTime = 0.0f;
+	int m_Frame = 0;
+
+	Engine::CSprite *m_pCurrentEditorSprite = NULL;
 
 	void DrawMap(const vector<int> &Chunk, int ChunkWidth, int ChunkHeight);
 	void Draw();
@@ -75,6 +119,8 @@ class CGameApplication : public Engine::CApplication
 
 	void UpdateMenu();
 	void RenderMenu();
+	void UpdateEditor(double Time, double TimeDelta);
+	void RenderEditor();
 
 public:
 

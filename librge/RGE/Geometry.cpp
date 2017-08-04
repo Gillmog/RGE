@@ -88,3 +88,18 @@ int Engine::CColor::GetColor() const
     return (r | g | b) * m_Alpha;
 }
 #endif
+
+Engine::CRect::CRect()
+{
+
+}
+
+Engine::CRect::CRect(const CRect &Other) : m_Left(Other.m_Left), m_Top(Other.m_Top), m_Right(Other.m_Right), m_Bottom(Other.m_Bottom)
+{
+
+}
+
+Engine::CRect::CRect(int Left, int Top, int Right, int Bottom) : m_Left(Left), m_Top(Top), m_Right(Right), m_Bottom(Bottom)
+{
+
+}

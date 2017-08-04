@@ -29,7 +29,7 @@ namespace Engine
 
 		CColor(const CColor &Other);
 
-		CColor &operator=(const CColor &Other)
+		inline CColor &operator=(const CColor &Other)
 		{
 			m_Red = Other.m_Red;
 			m_Green = Other.m_Green;
@@ -44,7 +44,7 @@ namespace Engine
 			return *this;
 		}
 
-		bool operator==(const CColor &Other)
+		inline bool operator==(const CColor &Other)
 		{
 			return m_Red == Other.m_Red &&
 				m_Green == Other.m_Green &&
@@ -56,7 +56,7 @@ namespace Engine
 				m_BGAlpha == Other.m_BGAlpha;
 		}
 
-		bool operator!=(const CColor &Other)
+		inline bool operator!=(const CColor &Other)
 		{
 			return m_Red != Other.m_Red ||
 				m_Green != Other.m_Green ||
@@ -77,6 +77,41 @@ namespace Engine
 #endif
 	};
 
+	class CRect
+	{
+	public:
+
+		int m_Left = 0;
+		int m_Top = 0;
+		int m_Right = 0;
+		int m_Bottom = 0;
+
+		CRect();
+
+		CRect(int Left, int Top, int Right, int Bottom);
+
+		CRect(const CRect &Other);
+
+		int GetWidth()
+		{
+			return abs(m_Right - m_Left);
+		}
+
+		int GetHeight()
+		{
+			return abs(m_Bottom - m_Top);
+		}
+
+		bool IsInside(int X, int Y)
+		{
+			if (X >= m_Left && X <= m_Right && Y >= m_Top && Y < m_Bottom)
+				return true;
+
+			return false;
+		}
+
+	};
+
 	class CPoint
 	{
 	public:
@@ -90,7 +125,7 @@ namespace Engine
 
 		CPoint(const CPoint &Other);
 
-		CPoint &operator=(const CPoint &Other)
+		inline CPoint &operator=(const CPoint &Other)
 		{
 			m_X = Other.m_X;
 			m_Y = Other.m_Y;
@@ -98,62 +133,44 @@ namespace Engine
 			return *this;
 		}
 
-		bool operator==(const CPoint &Other)
+		inline bool operator==(const CPoint &Other)
 		{
 			return m_X == Other.m_X && m_Y == Other.m_Y;
 		}
 
-		bool operator!=(const CPoint &Other)
+		inline bool operator!=(const CPoint &Other)
 		{
 			return m_X != Other.m_X || m_Y != Other.m_Y;
 		}
 
-		CPoint &operator+(const CPoint &Other)
+		inline CPoint operator+(const CPoint &Other) const
 		{
-			m_X += Other.m_X;
-			m_Y += Other.m_Y;
-
-			return *this;
+			return CPoint(m_X + Other.m_X, m_Y + Other.m_Y);
 		}
 
-		CPoint &operator+(const int &Other)
+		inline CPoint operator+(const int &Other) const
 		{
-			m_X += Other;
-			m_Y += Other;
-
-			return *this;
+			return CPoint(m_X + Other, m_Y + Other);
 		}
 
-		CPoint &operator/(const CPoint &Other)
+		inline CPoint operator/(const CPoint &Other) const
 		{
-			m_X /= Other.m_X;
-			m_Y /= Other.m_Y;
-
-			return *this;
+			return CPoint(m_X - Other.m_X, m_Y - Other.m_Y);
 		}
 
-		CPoint &operator/(const int &Other)
+		inline CPoint operator/(const int &Other) const
 		{
-			m_X /= Other;
-			m_Y /= Other;
-
-			return *this;
+			return CPoint(m_X / Other, m_Y / Other);
 		}
 
-		CPoint &operator-(const int &Other)
+		inline CPoint operator-(const int &Other) const
 		{
-			m_X -= Other;
-			m_Y -= Other;
-
-			return *this;
+			return CPoint(m_X - Other, m_Y - Other);
 		}
 
-		CPoint &operator-(const CPoint &Other)
+		inline CPoint operator-(const CPoint &Other) const
 		{
-			m_X -= Other.m_X;
-			m_Y -= Other.m_Y;
-
-			return *this;
+			return CPoint(m_X - Other.m_X, m_Y - Other.m_Y);
 		}
 	};
 }

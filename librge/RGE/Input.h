@@ -8,14 +8,52 @@
 namespace Engine
 {
 	class CApplication;
+	class CEvents;
+
+	class CMouse
+	{
+		struct CButton
+		{
+			CPoint m_Position;
+			bool m_bState = false;
+		};
+
+		CButton m_BufferedEvents[5];
+		CButton m_PrevBufferedEvents[5];
+
+		CPoint m_MousePosition;
+		int m_MouseWheel = 0;
+
+	public:
+
+		CMouse(CApplication *pApp);
+
+		~CMouse()
+		{
+			
+		}
+
+		bool IsPressed(int Button);
+
+		bool IsReleased(int Button);
+
+#if defined(RGE_WIN)
+		void OnEvent(const INPUT_RECORD &Event);
+#endif
+
+		void OnUpdate(CEvents *pEvents);
+
+		void ClearBufferedEnvents();
+
+		CPoint GetPosition() const { return m_MousePosition; }
+	
+		int GetWheel() const { return m_MouseWheel; }
+	};
 
 	class CKeyboard
 	{
-		void* m_InputHandle;
 		map<int, int> m_MappedKeys;
-#if defined(RGE_WIN)
-		DWORD m_NumEvents = 0;
-#endif
+
 		void AddMappedKey(int Key, int KeyCode)
 		{
 			m_MappedKeys.insert(make_pair(Key, KeyCode));
@@ -310,7 +348,16 @@ namespace Engine
 
 		CKeyboard(CApplication *pApp);
 
-		void OnUpdate();
+		~CKeyboard()
+		{
+			
+		}
+
+#if defined(RGE_WIN)
+		void OnEvent(const INPUT_RECORD &Event);
+#endif
+
+		void OnUpdate(CEvents *pEvents);
 
 		void ClearBufferedEnvents();
 

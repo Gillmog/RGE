@@ -10,6 +10,7 @@ namespace Engine
 	class CArchive
 	{
 		FILE *m_pFile = NULL;
+		bool m_bStoring = false;;
 
 	public:
 
@@ -32,6 +33,8 @@ namespace Engine
 			fwrite((void*)(&Value), sizeof(T), 1, m_pFile);
 			return *this;
 		}
+
+		bool IsStoring() const { return m_bStoring; }
 	};
 }
 #endif //ARCHIVE_H

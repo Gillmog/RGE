@@ -7,10 +7,12 @@ Engine::CArchive::CArchive(const string &FileName, bool bIn)
 	if (bIn)
 	{
 		m_pFile = fopen(FileName.c_str(), "rb");
+		m_bStoring = false;
 	}
 	else
 	{
 		m_pFile = fopen(FileName.c_str(), "wb");
+		m_bStoring = true;
 	}
 }
 

@@ -10,6 +10,10 @@ add_library(RGE
 	RGE/Application.cpp
 	RGE/Archive.cpp
 	RGE/Archive.h
+	RGE/UI.cpp
+	RGE/UI.h
+	RGE/Sprite.cpp
+	RGE/Sprite.h
 )
 
 IF (WIN32)

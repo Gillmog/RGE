@@ -4,6 +4,7 @@ Engine::CGraphics::CGraphics(CPoint WindowSize)
 {
 #ifdef RGE_WIN
 	m_WindowHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+
 #elif defined(RGE_UNIX)
 	initscr();
 
@@ -243,11 +244,11 @@ void Engine::CGraphics::Draw(const string &Value, CPoint Position, CColor ColorA
 	//Clip
 	if (NewPosition.m_X < 0 || NewPosition.m_Y < 0 || NewPosition.m_X >= m_WindowSize.m_X || NewPosition.m_Y >= m_WindowSize.m_Y)
 	{
-		m_Buffer[make_pair(Position.m_X, Position.m_Y)] = CBuffer();
+		m_Buffer[make_pair(NewPosition.m_X, NewPosition.m_Y)] = CBuffer();
 		return;
 	}
 
-	CBuffer Buffer = m_Buffer[make_pair(Position.m_X, Position.m_Y)];
+	CBuffer Buffer = m_Buffer[make_pair(NewPosition.m_X, NewPosition.m_Y)];
 	Buffer.m_Position = NewPosition;
 
 	Buffer.m_bFlush = true;
@@ -255,8 +256,8 @@ void Engine::CGraphics::Draw(const string &Value, CPoint Position, CColor ColorA
 	Buffer.m_Value = Value;
 	Buffer.m_ColorAttr = ColorAttr;
 
-	string CurrentValue = m_Buffer[make_pair(Position.m_X, Position.m_Y)].m_Value;
-	CColor CurrentColor = m_Buffer[make_pair(Position.m_X, Position.m_Y)].m_ColorAttr;
+	string CurrentValue = m_Buffer[make_pair(NewPosition.m_X, NewPosition.m_Y)].m_Value;
+	CColor CurrentColor = m_Buffer[make_pair(NewPosition.m_X, NewPosition.m_Y)].m_ColorAttr;
 
 	if (CurrentValue != Value && Buffer.m_bDirty == false)
 		Buffer.m_bDirty = true;
@@ -266,15 +267,31 @@ void Engine::CGraphics::Draw(const string &Value, CPoint Position, CColor ColorA
 
 	Buffer.m_bForce = bForce;
 
-	m_Buffer[make_pair(Position.m_X, Position.m_Y)] = Buffer;
+	m_Buffer[make_pair(NewPosition.m_X, NewPosition.m_Y)] = Buffer;
+}
+
+void Engine::CGraphics::Draw(CSprite *pSprite, bool bForce /*= false*/)
+{
+	CSprite::CSpriteFrame &SpriteBuffer = pSprite->GetSpriteFrame();
+
+	for (int n = 0; n < SpriteBuffer.GetBufferSize(); n++)
+	{
+		const CSprite::CSpriteFrame::CSpriteBuffer &Buffer = SpriteBuffer.GetBuffer(n);
+
+		if (Buffer.m_Valid)
+			Draw(Buffer.m_Char, Buffer.m_Position + pSprite->GetPosition(), Buffer.m_Color, bForce);
+	}
 }
 
 void Engine::CGraphics::Flush()
 {
-#if defined(RGE_UNIX)
+#ifdef RGE_WIN      
+	//cout.sync_with_stdio(false);
+#elif defined(RGE_UNIX)
 	WINDOW* win = static_cast<WINDOW*>(m_WindowHandle);
 	touchwin(win);
 #endif
+
 	for (auto &Buffer : m_Buffer)
 	{
 		bool bClear = false;
@@ -315,6 +332,7 @@ void Engine::CGraphics::Flush()
 	SetCursorPosition(CPoint());
 
 #ifdef RGE_WIN      
+	//cout.sync_with_stdio(true);
 	cout.flush();
 #elif defined(RGE_UNIX)
 	wrefresh(win);
