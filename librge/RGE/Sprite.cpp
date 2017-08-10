@@ -9,9 +9,14 @@ void Engine::CSprite::CSpriteFrame::Serialize(CArchive &Archive)
 
 		int BufferSize = (int)m_Buffer.size();
 		Archive << BufferSize;
+
 		for (int n = 0; n < BufferSize; n++)
 		{
 			const CSpriteBuffer &Buffer = m_Buffer[n];
+			Archive << Buffer.m_Valid;
+			if (!Buffer.m_Valid)
+				continue;
+			Archive << Buffer.m_Char;
 			Archive << Buffer.m_Color.m_Red;
 			Archive << Buffer.m_Color.m_Green;
 			Archive << Buffer.m_Color.m_Blue;
@@ -23,8 +28,6 @@ void Engine::CSprite::CSpriteFrame::Serialize(CArchive &Archive)
 
 			Archive << Buffer.m_Position.m_X;
 			Archive << Buffer.m_Position.m_Y;
-
-			Archive << Buffer.m_Char.c_str();
 		}
 	}
 	else
@@ -38,7 +41,14 @@ void Engine::CSprite::CSpriteFrame::Serialize(CArchive &Archive)
 		for (int n = 0; n < BufferSize; n++)
 		{
 			CSpriteBuffer Buffer;
+			Archive >> Buffer.m_Valid;
+			if (!Buffer.m_Valid)
+			{
+				m_Buffer.push_back(Buffer);
+				continue;
+			}
 
+			Archive >> Buffer.m_Char;
 			Archive >> Buffer.m_Color.m_Red;
 			Archive >> Buffer.m_Color.m_Green;
 			Archive >> Buffer.m_Color.m_Blue;
@@ -50,12 +60,6 @@ void Engine::CSprite::CSpriteFrame::Serialize(CArchive &Archive)
 
 			Archive >> Buffer.m_Position.m_X;
 			Archive >> Buffer.m_Position.m_Y;
-
-			char *pChar = "";
-			Archive >> *pChar;
-
-			Buffer.m_Char = pChar;
-			pChar = NULL;
 
 			m_Buffer.push_back(Buffer);
 		}
@@ -194,6 +198,47 @@ Engine::CSpriteManager* Engine::CSpriteManager::GetSingleton()
 	return m_pInstance;
 }
 
+void Engine::CSpriteManager::Save(const string &FilePath)
+{
+	CArchive Archive(FilePath, false);
+
+	Archive << GetNumSprites();
+
+	for (int nSprite = 0; nSprite < GetNumSprites(); nSprite++)
+	{
+		CSprite *pSprite = GetSprite(nSprite);
+
+		pSprite->Serialize(Archive);
+	}
+
+	Archive.Close();
+}
+
+void Engine::CSpriteManager::Load(const string &FilePath)
+{
+	CArchive Archive(FilePath, true);
+
+	if (!Archive.IsValid())
+		return;
+
+	int nSprites = 0;
+	Archive >> nSprites;
+
+	if (nSprites > 0)
+		Free();
+
+	for (int nSprite = 0; nSprite < nSprites; nSprite++)
+	{
+		CSprite *pSprite = new CSprite();
+
+		pSprite->Serialize(Archive);
+
+		m_Sprites.push_back(pSprite);
+	}
+
+	Archive.Close();
+}
+
 void Engine::CSpriteManager::RemoveSprite(int Index)
 {
 	assert(Index >= 0);
@@ -224,7 +269,7 @@ void Engine::CSprite::Serialize(CArchive &Archive)
 {
 	if (Archive.IsStoring())
 	{
-		Archive << m_Name.c_str();
+		Archive << m_Name;
 		Archive << m_Position.m_X;
 		Archive << m_Position.m_Y;
 
@@ -239,11 +284,7 @@ void Engine::CSprite::Serialize(CArchive &Archive)
 	}
 	else
 	{
-		char *pName = "";
-		Archive >> pName;
-		m_Name = pName;
-		pName = NULL;
-
+		Archive >> m_Name;
 		Archive >> m_Position.m_X;
 		Archive >> m_Position.m_Y;
 
@@ -276,7 +317,7 @@ void Engine::CSprite::RemoveFrame(int nFrame)
 	if (m_Frames.size() > 1)
 		m_Frames.erase(m_Frames.begin() + nFrame);
 
-	m_Frame = m_Frames.size() - 1;
+	m_Frame = (int)m_Frames.size() - 1;
 }
 
 void Engine::CSprite::Update(double Time, double TimeDelta)
@@ -284,8 +325,8 @@ void Engine::CSprite::Update(double Time, double TimeDelta)
 	if (IsPlay())
 	{
 		int Frame = GetFrame();
-		m_FrameTime += 1.0f * TimeDelta;
-		Frame = m_FrameTime / 15.0;
+		m_FrameTime += 1.0f * (float)TimeDelta;
+		Frame = int(m_FrameTime / 15.0);
 
 		if (Frame >= GetNumFrames())
 		{

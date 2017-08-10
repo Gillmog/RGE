@@ -205,6 +205,25 @@ void CGameApplication::UpdateEditor(double Time, double TimeDelta)
 			}
 		}
 
+		//save
+		if (GetKeyboard()->IsKeyReleased(Engine::CKeyboard::K_F2))
+		{
+			string Path = GetPath() + "/" + "Sprites.pak";
+			Engine::CSpriteManager::GetSingleton()->Save(Path);
+		}
+
+		//load
+		if (GetKeyboard()->IsKeyReleased(Engine::CKeyboard::K_F3))
+		{
+			string Path = GetPath() + "/" + "Sprites.pak";
+			Engine::CSpriteManager::GetSingleton()->Load(Path);
+
+			if (Engine::CSpriteManager::GetSingleton()->GetNumSprites() > 0)
+				m_pCurrentEditorSprite = Engine::CSpriteManager::GetSingleton()->GetSprite(0);
+			else
+				m_pCurrentEditorSprite = NULL;
+		}
+
 		if (GetKeyboard()->IsKeyReleased(Engine::CKeyboard::K_LEFT))
 		{
 			if (m_pCurrentEditorSprite)
@@ -266,7 +285,7 @@ void CGameApplication::RenderEditor()
 		{
 			for (int i = 0; i < SpriteBuffer.GetWidth(); i++)
 			{
-				GetGraphics()->Draw(".", Engine::CPoint(i, j), Engine::CColor(1, 1, 1));
+				GetGraphics()->Draw(".", Engine::CPoint(i, j) + m_pCurrentEditorSprite->GetPosition(), Engine::CColor(1, 1, 1));
 			}
 		}
 
@@ -311,6 +330,30 @@ CGameApplication::CGameApplication(const Engine::CPoint &WindowSize, const strin
 	m_MenuSelectedColor = Engine::CColor(1, 0, 1, 1, 0, 0, 1, 1);
 	m_MenuTextColor = Engine::CColor(1, 0, 1, 1);
 
+	/*
+	{
+		
+		Engine::CArchive ArchiveSave(GetPath() + "/test", false);
+		int n1 = 10;
+		string p = "Test";
+
+		ArchiveSave << n1;
+		ArchiveSave << p;
+		
+		ArchiveSave.Close();
+		
+		
+		Engine::CArchive ArchiveLoad(GetPath() + "/test", true);
+
+		int n2 = 0;
+		string p1 = "";
+
+		ArchiveLoad >> n2;
+		ArchiveLoad >> p1;
+
+		ArchiveLoad.Close();
+	}
+	*/
 }
 
 

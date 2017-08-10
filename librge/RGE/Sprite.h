@@ -77,6 +77,11 @@ namespace Engine
 
 	public:
 
+		CSprite()
+		{
+
+		}
+
 		CSprite(const string &Name, int Width, int Height);
 
 		string GetName() const { return m_Name; }
@@ -136,6 +141,10 @@ namespace Engine
 		CSprite *CreateSprite(const string &Name, int Width, int Height);
 
 		static CSpriteManager* GetSingleton();
+
+		void Save(const string &FilePath);
+
+		void Load(const string &FilePath);
 	};
 }
 
