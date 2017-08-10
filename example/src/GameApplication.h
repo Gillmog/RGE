@@ -112,6 +112,8 @@ class CGameApplication : public Engine::CApplication
 
 	Engine::CSprite *m_pCurrentEditorSprite = NULL;
 
+	shared_ptr<Engine::CDialog> m_pDialog;
+
 	void DrawMap(const vector<int> &Chunk, int ChunkWidth, int ChunkHeight);
 	void Draw();
 

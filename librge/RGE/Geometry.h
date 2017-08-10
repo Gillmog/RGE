@@ -110,6 +110,14 @@ namespace Engine
 			return false;
 		}
 
+		void Move(int X, int Y)
+		{
+			m_Left += X;
+			m_Right += X;
+			m_Bottom += Y;
+			m_Top += Y;
+		}
+
 	};
 
 	class CPoint

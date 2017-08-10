@@ -137,11 +137,17 @@ void Engine::CKeyboard::ClearBufferedEnvents()
 
 bool Engine::CKeyboard::IsKeyPressed(int KeyCode)
 {
+	if (m_bLock)
+		return false;
+
 	return m_BufferedEvents[KeyCode].m_bState;
 }
 
 bool Engine::CKeyboard::IsKeyReleased(int KeyCode)
 {
+	if (m_bLock)
+		return false;
+
 	return !m_BufferedEvents[KeyCode].m_bState && m_PrevBufferedEvents[KeyCode].m_bState;
 }
 
@@ -156,6 +162,9 @@ Engine::CMouse::CMouse(CApplication *pApp)
 
 bool Engine::CMouse::IsPressed(int Button)
 {
+	if (m_bLock)
+		return false;
+
 	if (Button >= 5)
 		return false;
 
@@ -164,6 +173,9 @@ bool Engine::CMouse::IsPressed(int Button)
 
 bool Engine::CMouse::IsReleased(int Button)
 {
+	if (m_bLock)
+		return false;
+
 	if (Button >= 5)
 		return false;
 

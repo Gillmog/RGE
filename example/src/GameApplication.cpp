@@ -40,7 +40,7 @@ void CGameApplication::UpdateMenu()
 	Engine::CRect NewGameRect(HalfWinSize.m_X - 4, HalfWinSize.m_Y, HalfWinSize.m_X - 4 + 8, HalfWinSize.m_Y + 1);
 	Engine::CRect EditorRect(HalfWinSize.m_X - 2, HalfWinSize.m_Y + 1, HalfWinSize.m_X - 2 + 5, HalfWinSize.m_Y + 2);
 	Engine::CRect ExitGameRect(HalfWinSize.m_X - 2, HalfWinSize.m_Y + 2, HalfWinSize.m_X - 2 + 5, HalfWinSize.m_Y + 3);
-
+	
 	if (GetKeyboard()->IsKeyPressed(Engine::CKeyboard::K_UP))
 	{
 		if (m_MenuState == -1)
@@ -330,30 +330,22 @@ CGameApplication::CGameApplication(const Engine::CPoint &WindowSize, const strin
 	m_MenuSelectedColor = Engine::CColor(1, 0, 1, 1, 0, 0, 1, 1);
 	m_MenuTextColor = Engine::CColor(1, 0, 1, 1);
 
-	/*
-	{
-		
-		Engine::CArchive ArchiveSave(GetPath() + "/test", false);
-		int n1 = 10;
-		string p = "Test";
+	m_pDialog = Engine::CControlsManager::GetSingleton()->Create<Engine::CDialog>(nullptr, 1001, Engine::CRect(0, 0, 20, 10));
+	m_pDialog->Move(Engine::CPoint(20, 10));
+	m_pDialog->SetBackgroundColor(Engine::CColor(0, 0, 0, 0, 0, 0, 1, 1));
 
-		ArchiveSave << n1;
-		ArchiveSave << p;
-		
-		ArchiveSave.Close();
-		
-		
-		Engine::CArchive ArchiveLoad(GetPath() + "/test", true);
+	shared_ptr<Engine::CButton> pButton = Engine::CControlsManager::GetSingleton()->Create<Engine::CButton>(m_pDialog, 1002, Engine::CRect(0, 0, 5, 1));
+	pButton->Move(Engine::CPoint(1, 1));
+	pButton->SetBackgroundColor(Engine::CColor(0, 0, 0, 0, 0, 0, 0, 1));
+	pButton->SetText("Button");
+	pButton->SetTextColor(Engine::CColor(1, 1, 1, 1, 1, 1, 0, 1));
 
-		int n2 = 0;
-		string p1 = "";
+	shared_ptr<Engine::CLabel> pLabel = Engine::CControlsManager::GetSingleton()->Create<Engine::CLabel>(m_pDialog, 1003, Engine::CRect(0, 0, 5, 1));
+	pLabel->Move(Engine::CPoint(1, 3));
+	pLabel->SetText("Label");
+	pLabel->SetTextColor(Engine::CColor(1, 1, 1, 1));
 
-		ArchiveLoad >> n2;
-		ArchiveLoad >> p1;
-
-		ArchiveLoad.Close();
-	}
-	*/
+	m_pDialog->SetVisible(false);
 }
 
 

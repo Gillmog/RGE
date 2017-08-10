@@ -6,6 +6,7 @@
 #include "Core.h"
 #include "Graphics.h"
 #include "Input.h"
+#include "UI.h"
 
 namespace Engine
 {

@@ -23,6 +23,7 @@ namespace Engine
 
 		CPoint m_MousePosition;
 		int m_MouseWheel = 0;
+		bool m_bLock = false;
 
 	public:
 
@@ -48,11 +49,16 @@ namespace Engine
 		CPoint GetPosition() const { return m_MousePosition; }
 	
 		int GetWheel() const { return m_MouseWheel; }
+
+		bool IsLock() const { return m_bLock; }
+		void SetLock(bool val) { m_bLock = val; }
 	};
 
 	class CKeyboard
 	{
 		map<int, int> m_MappedKeys;
+
+		bool m_bLock = false;
 
 		void AddMappedKey(int Key, int KeyCode)
 		{
@@ -364,6 +370,9 @@ namespace Engine
 		bool IsKeyPressed(int KeyCode);
 
 		bool IsKeyReleased(int KeyCode);
+
+		bool IsLock() const { return m_bLock; }
+		void SetLock(bool val) { m_bLock = val; }
 	};
 }
 
