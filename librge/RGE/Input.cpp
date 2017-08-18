@@ -1,6 +1,7 @@
 #include "Input.h"
 #include "Application.h"
 #include "Graphics.h"
+#include "UI.h"
 
 Engine::CKeyboard::CKeyboard(CApplication *pApp)
 {
@@ -96,6 +97,9 @@ void Engine::CKeyboard::OnEvent(const INPUT_RECORD &Event)
 			Key.m_KeyCode = MappedKey;
 			Key.m_bState = true;
 			m_BufferedEvents[Key.m_KeyCode] = Key;
+
+			string KeyChar(1, Key.m_Ascii);
+			CControlsManager::GetSingleton()->ProcessKeyboardMessage(CControlKeyboardMessage(CControlKeyboardMessage::ON_KEYBOARD_KEY_DOWN, MappedKey, KeyChar));
 		}
 	}
 }
@@ -129,7 +133,16 @@ void Engine::CKeyboard::OnUpdate(CEvents *pEvents)
 void Engine::CKeyboard::ClearBufferedEnvents()
 {
 	for (int i = 0; i < 256; i++)
+	{
+		if (m_PrevBufferedEvents[i].m_bState && !m_BufferedEvents[i].m_bState)
+		{
+			string KeyChar(1, m_PrevBufferedEvents[i].m_Ascii);
+			CControlsManager::GetSingleton()->ProcessKeyboardMessage(CControlKeyboardMessage(CControlKeyboardMessage::ON_KEYBOARD_KEY_UP, 
+				m_PrevBufferedEvents[i].m_KeyCode, KeyChar));
+		}
+
 		m_PrevBufferedEvents[i] = m_BufferedEvents[i];
+	}
 
 	for (int i = 0; i < 256; i++)
 		m_BufferedEvents[i].m_bState = false;
@@ -199,10 +212,12 @@ void Engine::CMouse::OnEvent(const INPUT_RECORD &Event)
 			if (MouseRecord.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
 			{
 				nButton = 0;
+				CControlsManager::GetSingleton()->ProcessMouseMessage(CControlMouseMessage(CControlMouseMessage::ON_MOUSE_LBUTTON_DOWN, m_MousePosition, m_MouseWheel));
 			}
 			else if (MouseRecord.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
 			{
 				nButton = 1;
+				CControlsManager::GetSingleton()->ProcessMouseMessage(CControlMouseMessage(CControlMouseMessage::ON_MOUSE_RBUTTON_DOWN, m_MousePosition, m_MouseWheel));
 			}
 			else if (MouseRecord.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
 			{
@@ -228,20 +243,45 @@ void Engine::CMouse::OnEvent(const INPUT_RECORD &Event)
 			else
 			{
 				for (int i = 0; i < 5; i++)
+				{
+					if (m_BufferedEvents[i].m_bState == true)
+					{
+						if (i == 0)
+						{
+							CControlsManager::GetSingleton()->ProcessMouseMessage(CControlMouseMessage(CControlMouseMessage::ON_MOUSE_LBUTTON_UP, 
+								m_MousePosition, m_MouseWheel));
+						}
+						else
+						if (i == 1)
+						{
+							CControlsManager::GetSingleton()->ProcessMouseMessage(CControlMouseMessage(CControlMouseMessage::ON_MOUSE_RBUTTON_UP,
+								m_MousePosition, m_MouseWheel));
+						}
+					}
+
 					m_BufferedEvents[i].m_bState = false;
+				}
 			}
 
 			m_MousePosition = CPoint((int)MouseRecord.dwMousePosition.X, (int)MouseRecord.dwMousePosition.Y);
 		}
 			break;
 		case MOUSE_HWHEELED:
+			m_MousePosition = CPoint((int)MouseRecord.dwMousePosition.X, (int)MouseRecord.dwMousePosition.Y);
 			m_MouseWheel = 1;
+			CControlsManager::GetSingleton()->ProcessMouseMessage(CControlMouseMessage(CControlMouseMessage::ON_MOUSE_WHEEL,
+				m_MousePosition, m_MouseWheel));
 			break;
 		case MOUSE_MOVED:
 			m_MousePosition = CPoint((int)MouseRecord.dwMousePosition.X, (int)MouseRecord.dwMousePosition.Y);
+			CControlsManager::GetSingleton()->ProcessMouseMessage(CControlMouseMessage(CControlMouseMessage::ON_MOUSE_MOVE,
+				m_MousePosition, m_MouseWheel));
 			break;
 		case MOUSE_WHEELED:
+			m_MousePosition = CPoint((int)MouseRecord.dwMousePosition.X, (int)MouseRecord.dwMousePosition.Y);
 			m_MouseWheel = -1;
+			CControlsManager::GetSingleton()->ProcessMouseMessage(CControlMouseMessage(CControlMouseMessage::ON_MOUSE_WHEEL,
+				m_MousePosition, m_MouseWheel));
 			break;
 		default:
 			break;

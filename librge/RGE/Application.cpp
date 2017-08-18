@@ -45,28 +45,12 @@ void Engine::CApplication::EventLoop(function<void()> &&Callback)
 			m_pMouse->OnEvent(m_pInputEvents->m_InputRecord[i]);
 		}
 #endif
+		m_pKeyboard->SetLock(false);
+		m_pMouse->SetLock(false);
 		m_pKeyboard->OnUpdate(m_pInputEvents.get());
 		m_pMouse->OnUpdate(m_pInputEvents.get());
 
-		m_pMouse->SetLock(false);
-		m_pKeyboard->SetLock(false);
-
-		if (m_pMouse->IsPressed(0) || m_pMouse->IsReleased(0))
-		{
-			for (int nControl = 0; nControl < CControlsManager::GetSingleton()->GetNumControls(); nControl++)
-			{
-				shared_ptr<ÑControl> pControl = CControlsManager::GetSingleton()->GetControl(nControl);
-
-				shared_ptr<ÑControl> pPickedControl = pControl->PickControlFromPoint(m_pMouse->GetPosition());
-
-				if (pPickedControl)
-				{
-					m_pMouse->SetLock(true);
-					m_pKeyboard->SetLock(true);
-					break;
-				}
-			}
-		}
+		CControlsManager::GetSingleton()->ProcessMessage(this);
 
 		Callback();
 		OnUpdate(Timer.GetDurationInSeconds(), TimeDelta / Timer.GetDuration());

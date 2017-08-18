@@ -337,15 +337,53 @@ CGameApplication::CGameApplication(const Engine::CPoint &WindowSize, const strin
 	shared_ptr<Engine::CButton> pButton = Engine::CControlsManager::GetSingleton()->Create<Engine::CButton>(m_pDialog, 1002, Engine::CRect(0, 0, 5, 1));
 	pButton->Move(Engine::CPoint(1, 1));
 	pButton->SetBackgroundColor(Engine::CColor(0, 0, 0, 0, 0, 0, 0, 1));
-	pButton->SetText("Button");
+	pButton->SetText("Button1");
+	pButton->SetTextColor(Engine::CColor(1, 1, 1, 1, 1, 1, 0, 1));
+
+	pButton = Engine::CControlsManager::GetSingleton()->Create<Engine::CButton>(m_pDialog, 1002, Engine::CRect(0, 0, 5, 1));
+	pButton->Move(Engine::CPoint(1, 3));
+	pButton->SetBackgroundColor(Engine::CColor(0, 0, 0, 0, 0, 0, 0, 1));
+	pButton->SetText("Button2");
+	pButton->SetTextColor(Engine::CColor(1, 1, 1, 1, 1, 1, 0, 1));
+
+	pButton = Engine::CControlsManager::GetSingleton()->Create<Engine::CButton>(m_pDialog, 1002, Engine::CRect(0, 0, 5, 1));
+	pButton->Move(Engine::CPoint(1, 5));
+	pButton->SetBackgroundColor(Engine::CColor(0, 0, 0, 0, 0, 0, 0, 1));
+	pButton->SetText("Button3");
 	pButton->SetTextColor(Engine::CColor(1, 1, 1, 1, 1, 1, 0, 1));
 
 	shared_ptr<Engine::CLabel> pLabel = Engine::CControlsManager::GetSingleton()->Create<Engine::CLabel>(m_pDialog, 1003, Engine::CRect(0, 0, 5, 1));
-	pLabel->Move(Engine::CPoint(1, 3));
+	pLabel->Move(Engine::CPoint(1, 7));
 	pLabel->SetText("Label");
 	pLabel->SetTextColor(Engine::CColor(1, 1, 1, 1));
 
-	m_pDialog->SetVisible(false);
+	shared_ptr<Engine::CButton> pSubButton = Engine::CControlsManager::GetSingleton()->Create<Engine::CButton>(m_pDialog, 1002, Engine::CRect(0, 0, 5, 1));
+	pSubButton->Move(Engine::CPoint(10, 1));
+	pSubButton->SetBackgroundColor(Engine::CColor(0, 0, 0, 0, 0, 0, 0, 1));
+	pSubButton->SetText("Button4");
+	pSubButton->SetTextColor(Engine::CColor(1, 1, 1, 1, 1, 1, 0, 1));
+
+	pButton = Engine::CControlsManager::GetSingleton()->Create<Engine::CButton>(pSubButton, 1002, Engine::CRect(0, 0, 5, 1));
+	pButton->Move(Engine::CPoint(0, 3));
+	pButton->SetBackgroundColor(Engine::CColor(0, 0, 0, 0, 0, 0, 0, 1));
+	pButton->SetText("SubButton1");
+	pButton->SetTextColor(Engine::CColor(1, 1, 1, 1, 1, 1, 0, 1));
+
+	pButton = Engine::CControlsManager::GetSingleton()->Create<Engine::CButton>(pSubButton, 1002, Engine::CRect(0, 0, 5, 1));
+	pButton->Move(Engine::CPoint(0, 5));
+	pButton->SetBackgroundColor(Engine::CColor(0, 0, 0, 0, 0, 0, 0, 1));
+	pButton->SetText("SubButton2");
+	pButton->SetTextColor(Engine::CColor(1, 1, 1, 1, 1, 1, 0, 1));
+
+	pButton = Engine::CControlsManager::GetSingleton()->Create<Engine::CButton>(pButton, 1002, Engine::CRect(0, 0, 5, 1));
+	pButton->Move(Engine::CPoint(0, 1));
+	pButton->SetBackgroundColor(Engine::CColor(0, 0, 0, 0, 0, 0, 0, 1));
+	pButton->SetText("SubButton3");
+	pButton->SetTextColor(Engine::CColor(1, 1, 1, 1, 1, 1, 0, 1));
+
+	m_pDialog->SetVisible(true);
+	m_pDialog->SetHasFocus(true);
+	m_pDialog->SetModal();
 }
 
 
@@ -355,6 +393,7 @@ CGameApplication::~CGameApplication()
 
 void CGameApplication::OnUpdate(double Time, double TimeDelta)
 {
+	//m_pDialog->Move(Engine::CPoint(1, 0));
 	m_FrameTime += 1.0f * TimeDelta;
 	m_Frame = m_FrameTime / 15.0;
 
